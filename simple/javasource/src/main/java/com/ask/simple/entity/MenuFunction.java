@@ -1,0 +1,55 @@
+package com.ask.simple.entity;
+
+import com.ask.base.entity.BaseEntity;
+import com.ask.codecreate.feature.annotation.IsCreate;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+
+@Getter
+@Setter
+@Entity
+@IsCreate
+@Table(name = "menu_function_",
+              uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"route_name_", "url_","resource_id_"})})
+public class MenuFunction extends BaseEntity {
+    private static final long serialVersionUID = -7318256292767023491L;
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "id_")
+    private Long id;
+
+    @Column(name = "cname_")
+    private String cname;
+    //属于那个组
+    @Column(name = "ename_")
+    private String ename;
+
+    @Column(name = "url_")
+    private String url;
+
+    @Column(name = "sort_")
+    private Integer sort;
+
+    @Column(name = "route_name_")
+    private String routeName;
+
+    @Column(name = "pid_")
+    private Integer pid;
+
+    @Column(name = "is_menu_")
+    private Integer isMenu;
+
+    @Column(name = "is_show_")
+    private Integer isShow;
+
+    @Column(name = "is_flow_")
+    private Integer isFlow;
+
+    @Column(name = "resource_id_")
+    private String resourceId ;
+
+}
