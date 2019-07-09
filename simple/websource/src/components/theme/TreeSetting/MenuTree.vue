@@ -332,7 +332,7 @@
 
     updateNode () {
       if (!this.currentParentNode.id ||
-          !this.currentParentNode.pid ||
+        (!this.currentParentNode.pid && this.currentParentNode.pid !== 0) ||
           !this.currentParentNode.cname) {
         this.message('请完整选中状态的节点信息', '友情提示')
         return
