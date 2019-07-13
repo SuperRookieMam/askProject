@@ -46,8 +46,9 @@ public class Food extends BaseEntity {
     @Column(name = "process_url_")
     @Description(label = "烹饪过程url")
     private String processUrls;
-
-    @OneToMany(targetEntity=Exam.class,mappedBy="food")	//一对多，让Exam维护外键
+    //一对多，生成中间表由 jpa自己维护
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exams_")
     private List<Exam> exams = new ArrayList<Exam>();
 
 

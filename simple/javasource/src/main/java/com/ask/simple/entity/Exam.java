@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author MR.Yin
@@ -27,20 +28,22 @@ public class Exam extends BaseEntity {
     @Description(label = "id")
     private Long id;
 
+    // 这个事题目名字？
     @Column(name = "subject_name_",unique = true)
-    @Description(label = "题目")
+    @Description(label = "题目类型")
     private String subjectName;
 
+    @Column(name = "subject_name_",unique = true)
+    @Description(label = "题目描述")
+    private String description;
+
+    // 单选,多选,
     @Column(name = "choose_")
-    @Description(label = "可选答案项")
+    @Description(label = "答案类型")
     private String choose;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="food_id_")
-    private Food food;
-
-    @JoinColumn(name="score")
-    @Description(label = "分值")
-    private Integer score;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "results_")
+    private List<Result> results;
 
 }

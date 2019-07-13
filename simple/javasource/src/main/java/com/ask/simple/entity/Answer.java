@@ -11,6 +11,8 @@ import javax.persistence.*;
 /**
  * @author MR.Yin
  * @desc  考试人
+ * 这个类不需要，直接在微信账号字段加载oauthuserdetaile里面
+ * 所有账号统一管理
  */
 
 @Getter

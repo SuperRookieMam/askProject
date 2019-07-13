@@ -1,6 +1,7 @@
 package com.ask.simple.entity;
 
 import com.ask.base.entity.BaseEntity;
+import com.ask.codecreate.feature.annotation.Description;
 import com.ask.codecreate.feature.annotation.IsCreate;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,18 @@ public class OAthUserDetailes extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id_")
     private Long id;
-
+    // 我们这边的账号，只能用英文，人员管理为唯一凭证
     @Column(name = "user_name_")
     private String username;
+
+    @Column(name = "nickname_")
+    @Description(label = "微信号")
+    private String nickname;
+
+    @Column(name = "weChat_id_")
+    @Description(label = "微信号")
+    private String weChatId;
+
 
     @Column(name = "pass_word_")
     private String password;

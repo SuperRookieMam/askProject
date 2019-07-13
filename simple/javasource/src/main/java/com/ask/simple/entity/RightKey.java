@@ -11,6 +11,7 @@ import javax.persistence.*;
 /**
  * @author MR.Yin
  * @desc:正确答案 绑定题 exam
+ * 用一对多，jpa 自动维护，不需要手动维护，不需要这个类
  */
 @Getter
 @Setter
