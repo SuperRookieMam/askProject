@@ -7,10 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author MR.Yin
@@ -33,7 +29,7 @@ public class Record extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "answer_id_")
     @Description(label = "答题人")
-    private Answer answer;
+    private OAthUserDetailes answer;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="food_id_", insertable = false,updatable = false)
     @Description(label = "菜品")

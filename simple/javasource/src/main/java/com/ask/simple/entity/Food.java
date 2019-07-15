@@ -48,7 +48,7 @@ public class Food extends BaseEntity {
     private String processUrls;
     //一对多，生成中间表由 jpa自己维护
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "exams_")
+    @JoinColumn(name = "food_id_")
     private List<Exam> exams = new ArrayList<Exam>();
 
 

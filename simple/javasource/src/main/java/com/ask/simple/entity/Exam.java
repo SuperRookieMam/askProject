@@ -28,12 +28,12 @@ public class Exam extends BaseEntity {
     @Description(label = "id")
     private Long id;
 
-    // 这个事题目名字？
+    //即问题名字
     @Column(name = "subject_name_",unique = true)
     @Description(label = "题目类型")
     private String subjectName;
 
-    @Column(name = "subject_name_",unique = true)
+    @Column(name = "description_",unique = true)
     @Description(label = "题目描述")
     private String description;
 

@@ -30,7 +30,7 @@ public class OAthUserDetailes extends BaseEntity implements UserDetails {
     private String username;
 
     @Column(name = "nickname_")
-    @Description(label = "微信号")
+    @Description(label = "昵称")
     private String nickname;
 
     @Column(name = "weChat_id_")
