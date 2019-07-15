@@ -1,5 +1,4 @@
 package com.ask.simple.entity;
-;
 import com.ask.base.entity.BaseEntity;
 import com.ask.codecreate.feature.annotation.IsCreate;
 import lombok.Getter;

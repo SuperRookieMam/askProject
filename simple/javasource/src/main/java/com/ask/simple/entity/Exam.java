@@ -43,7 +43,7 @@ public class Exam extends BaseEntity {
     private String choose;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "results_")
+    @JoinColumn(name = "exam_id_")
     private List<Result> results;
 
 }
