@@ -32,7 +32,7 @@
         <spring-oauth2.version>2.3.4.RELEASE</spring-oauth2.version>
         <springfox.version>2.6.0</springfox.version>
         <spring-boot-admin.version>1.5.4</spring-boot-admin.version>
-
+        <commons-io.version>2.6</commons-io.version>
         <!-- plugs -->
         <maven.deploy.version>2.7</maven.deploy.version>
         <maven.source.version>2.4</maven.source.version>
@@ -107,7 +107,11 @@
             <artifactId>unitils-core</artifactId>
             <version>${unitils.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
