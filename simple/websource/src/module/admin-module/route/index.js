@@ -35,7 +35,18 @@ export default [{
       path: '/menuRoleTree',
       component: () => import('@/components/theme/TreeSetting/MenuRoleTree'),
       props: true
-    }]
-  }
+    }, {
+      name: 'food',
+      path: '/food',
+      component: () => import('../../admin-module/component/food/food'),
+      props: true
+    }, {
+    name: 'foods',
+      path: '/foods',
+      component: () => import('../../admin-module/component/food/foods'),
+      props: true
+    }
+      ]
+   }
 
 ]
