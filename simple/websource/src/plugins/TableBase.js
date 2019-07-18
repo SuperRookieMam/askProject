@@ -68,8 +68,9 @@
 
   getFormData (url, id) {
      if (id !== 'new') {
-       this.select(`${url}/${id}`).then(data => {
+       return   this.select(`${url}/${id}`).then(data => {
            this.formData = data
+              return data
          })
      }
   }
@@ -80,6 +81,7 @@
     this.$refs[formName].validate((valid) => {
       if (valid) {
         if (id === 'new') {
+          console.log("新增"+this.formData)
           this.insert({url: url, params: [this.formData]}).then(ele => {
               if (ele.code === 0) {
                 this.formData = ele.data[0]
@@ -89,6 +91,8 @@
               }
             })
         } else {
+
+          console.log("修改"+ JSON.stringify(this.formData))
           this.update({url: url, params: [this.formData]})
               .then(ele => {
               if (ele.code === 0) {
