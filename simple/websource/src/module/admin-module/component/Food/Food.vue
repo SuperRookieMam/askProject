@@ -252,6 +252,13 @@
       this.examTable.push(this.newExam)
       console.log(this.newExam)
       this.dialogFormVisible = false
+      this.newExam = {
+        id: '',
+        subjectName: '',
+        description: '',
+        choose: '',
+        results: []
+      }
     }
 
     // 取消为菜单添加试题
