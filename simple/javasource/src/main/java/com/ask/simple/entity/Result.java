@@ -23,14 +23,14 @@ public class Result extends BaseEntity {
     private Long id;
 
     // 答案描述，答案的文字
-    @Column(name = "descrption_",unique = true)
+    @Column(name = "description_",unique = true)
     @Description(label = "答案")
-    private String descrption;
+    private String description;
 
     // 答案的分值 错的对的 正分负分交给管理管去设置
-    @Column(name = "scorde_")
+    @Column(name = "score_")
     @Description(label = "分值")
-    private Integer scorde;
+    private Integer score;
 
     // 答案是否正确
     @Column(name = "right_")
