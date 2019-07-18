@@ -182,8 +182,71 @@
             <el-table-column
               label="描述"
               prop="description">
-              <el-button type="text" size="mini" @click="addResults(scope.row)">添加答案</el-button>
-              <el-button type="text" size="mini" @click="deleteRow(scope.row)">删除试题</el-button>
+              <template slot-scope="scope">
+                <el-popover
+                  ref="popover4"
+                  placement="right"
+                  width="800"
+                  trigger="click">
+                  <el-dialog title="新增答案" :visible.sync="dialogFormVisibleResult">
+                    <el-form :model="newResult" ref="rootForm" :rules="rules">
+                      <el-form-item label="id" prop="id">
+                        <el-col :span="18">
+                          <el-input v-model="newResult.id"/>
+                        </el-col>
+                      </el-form-item>
+                      <el-form-item label="描述" prop="description">
+                        <el-col :span="18">
+                          <el-input v-model="newResult.description"/>
+                        </el-col>
+                      </el-form-item>
+                      <el-form-item label="正确？" prop="right">
+                        <el-select v-model="newResult.right" placeholder="请选择">
+                          <el-option
+                            v-for="item in options2"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"/>
+                        </el-select>
+                      </el-form-item>
+                      <el-form-item label="分值" prop="score">
+                        <el-col :span="18">
+                          <el-input v-model="newResult.score"/>
+                        </el-col>
+                      </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                      <el-button @click="cancelAddRoot">取 消</el-button>
+                      <el-button type="primary" @click="addResultTable()">确 定</el-button>
+                    </div>
+                  </el-dialog>
+                  <el-button type="primary"
+                             size="mini"
+                             @click="addResultView()">
+                    新增答案
+                  </el-button>
+                  <el-button type="primary"
+                             size="mini"
+                             @click="addResultToExam(scope.row)">
+                    确定将答案放入试题
+                  </el-button>
+                  <el-table :data="resultTable">
+                    <el-table-column
+                      label="题型"
+                      prop="scope.row.choose"/>
+                    <el-table-column
+                      label="题目"
+                      prop="scope.row.resultTable"/>
+                    <el-table-column width="150" property="id" label="id"></el-table-column>
+                    <el-table-column width="100" property="description" label="描述"></el-table-column>
+                    <el-table-column width="300" property="score" label="得分"></el-table-column>
+                    <el-table-column width="300" property="right" label="是否正确"></el-table-column>
+                  </el-table>
+                </el-popover>
+                <el-button v-popover:popover4>添加答案</el-button>
+              <el-button type="text" size="mini" @click="deleteExam(scope.row)">删除试题</el-button>
+                <el-button type="text" size="mini" @click="editExam(scope.row)">修改试题</el-button>
+              </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
@@ -216,9 +279,33 @@
       value: '多选题',
       label: '多选题'
     }]
+    options2=[{
+      value: 'true',
+      label: '正确'
+    }, {
+      value: 'false',
+      label: '错误'
+    }]
 
     examTable = []
+    resultTable=[]
     dialogFormVisible = false
+    dialogFormVisibleResult=false
+    //试题字符串
+    newExam = {
+      id: '',
+      subjectName: '',
+      description: '',
+      choose: '',
+      results: []
+    }
+    // 答案字符串
+    newResult={
+      id:'',
+      description:'',
+      score:'',
+      right:''
+    }
     controllerMapping = 'data/food'
 
     fileList = []
@@ -269,7 +356,6 @@
 
     // 为菜单添加试题
     addExamTable () {
-      console.log(this.newExam)
       this.examTable.push(this.newExam)
       console.log(this.newExam)
       this.dialogFormVisible = false
@@ -281,7 +367,26 @@
         results: []
       }
     }
-
+    //删除选中试题
+    deleteExam(exam){
+      for (var m = 0; m < this.examTable.length; m++) {
+        if (this.examTable[m] === exam) {
+          this.examTable.splice(m, 1);
+          return;
+        }
+      }
+    }
+    addResultTable(){
+      this.resultTable.push(this.newResult)
+      this.newResult={
+        id:'',
+        description:'',
+        score:'',
+        right:''
+      }
+      this.dialogFormVisibleResult=false
+      console.log(this.resultTable)
+    }
     // 取消为菜单添加试题
     cancelAddRoot () {
       alert('取消添加试题')
@@ -295,14 +400,28 @@
       console.log(this.formData)
     }
 
-// 为试题添加答案
-    addResults (row) {
-      console.log(row)
+  // 为试题添加答案
+    addResultToExam (exam) {
+      console.log(exam)
+      this.newExam=exam
+      this.newExam.results=this.resultTable
+      for (var m = 0; m < this.examTable.length; m++) {
+        if (this.examTable[m].subjectName=== exam.subjectName) {
+          this.examTable.splice(m, 1);
+          this.examTable.push(this.newExam)
+          console.log(this.newExam)
+          return;
+        }
+      }
+
     }
 
-    // 删除试题
-    deleteRow (row) {
-      console.log(row)
+
+    //修改试题
+    editExam(exam){
+    this.dialogFormVisible=true
+      this.newResult=exam
+
     }
 
     // 移除菜品图片
@@ -383,21 +502,18 @@
     addExam () {
       this.dialogFormVisible = true
     }
-
-    newExam = {
-      id: '',
-      subjectName: '',
-      description: '',
-      choose: '',
-      results: []
+    addResultView(){
+      this.dialogFormVisibleResult=true
     }
-
     created () {
-      this.getFormData(this.controllerMapping, this.id)
-      console.log(this.formData)
-      if (this.formData.exams != null) {
-        this.examTable = this.formData.exams
-      }
+      this.getFormData(this.controllerMapping, this.id).then(data =>{
+        console.log(data)
+        if (data.exams !== null) {
+          this.examTable = data.exams
+        }
+      })
+
+
     }
   }
 </script>
