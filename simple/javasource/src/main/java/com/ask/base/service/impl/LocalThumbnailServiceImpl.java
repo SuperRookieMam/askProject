@@ -53,8 +53,12 @@ public class LocalThumbnailServiceImpl implements ThumbnailService {
 				bi2.getGraphics().drawImage(image, 0, 0, n2_w, n2_h, null);
 				ImageIO.write(bi, "jpg", oStream);
 				ImageIO.write(bi2, "jpg", oStream2);
-				fileInfoDetails.setThumbnailPath(l1+path);
-				fileInfoDetails.setThumbnailPath2(l2+path);
+				String l1path =l1+path;
+				l1path = l1path.substring(l1path.indexOf("\\th1")+4);
+				fileInfoDetails.setThumbnailPath(l1path);
+				String l1path2 =l2+path;
+				l1path2 = l1path2.substring(l1path2.indexOf("\\th2")+4);
+				fileInfoDetails.setThumbnailPath2(l1path2);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new RuntimeException("创建缩略图失败");

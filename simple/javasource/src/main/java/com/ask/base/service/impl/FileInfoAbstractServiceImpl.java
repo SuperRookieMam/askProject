@@ -63,11 +63,7 @@ public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extend
         }
     }
     private T save(T fileInfo, UserDetails userDetails) throws Exception {
-        FileInfoDetails fileInfoDetails = (FileInfoDetails)fileInfo;
-        FileInfoDetails fileInfoDetails1 = findByFileName(fileInfoDetails.getFilename());
-        fileInfoDetails =ObjectUtils.isEmpty(fileInfoDetails1)
-                                ? (FileInfoDetails) fileInfoRepository.save(fileInfo)
-                                :fileInfoDetails1;
+        FileInfoDetails fileInfoDetails = (FileInfoDetails) fileInfoRepository.save(fileInfo);
         String storagePath = storageService.getRelativePath(fileInfoDetails.getFilename(),userDetails);
         fileInfoDetails.setPath(storagePath);
         fileInfo = (T) fileInfoDetails;
@@ -85,15 +81,4 @@ public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extend
         }
         fileInfoRepository.deleteById(id);
     }
-    private FileInfoDetails findByFileName (String fileName) {
-       DynamicTypeSelect dynamicTypeSelect = getBaseRepository().getDynamicTypeSelect();
-        dynamicTypeSelect.dynamicBuild(ele -> {
-            Predicate predicate =ele.flat.addEq("filename",fileName, JoinType.LEFT).and();
-            ele.query.where(predicate);
-            return predicate;
-        });
-        List<T> list = dynamicTypeSelect.getResult();
-        return list.isEmpty()? null: (FileInfoDetails) list.get(0);
-    }
-
 }
