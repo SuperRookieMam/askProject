@@ -1,10 +1,11 @@
 <template>
   <div>
-    <el-form :model="formData"
-             :rules="rules"
-             ref="formData"
-             label-width="100px"
-             size="mini">
+    <el-form
+      :model="formData"
+      :rules="rules"
+      ref="formData"
+      label-width="100px"
+      size="mini">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="基础信息" name="base">
           <el-row>

@@ -1,10 +1,11 @@
 <template>
   <div>
-    <el-form :model="formData"
-             :rules="rules"
-             ref="formData"
-             label-width="100px"
-             size="mini">
+    <el-form
+      :model="formData"
+      :rules="rules"
+      ref="formData"
+      label-width="100px"
+      size="mini">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="基础信息" name="base">
           <el-row>
@@ -93,23 +94,25 @@
 
   @Component
   export default class MenuFunction extends Mixins(TableBase) {
-    @Prop({ default: () => 'new' })
+    @Prop({default: () => 'new'})
     id
     activeName = 'base'
     controllerMapping = 'data/menuFunction'
     rules = {
-          name: [
-            {required: true, message: '请输入活动名称', trigger: 'blur'},
-            {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
-          ]
-        }
-    handleClick (tab, event) {
-       /* if (tab.name === 'formtest') {
-            this.$router.push({name: 'tt', params: {rowData: {id: 'new'}}})
-          } */
+      name: [
+        {required: true, message: '请输入活动名称', trigger: 'blur'},
+        {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
+      ]
     }
+
+    handleClick (tab, event) {
+      /* if (tab.name === 'formtest') {
+           this.$router.push({name: 'tt', params: {rowData: {id: 'new'}}})
+         } */
+    }
+
     created () {
-     this.getFormData(this.controllerMapping, this.id)
+      this.getFormData(this.controllerMapping, this.id)
     }
   }
 </script>

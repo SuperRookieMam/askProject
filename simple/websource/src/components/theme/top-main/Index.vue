@@ -6,8 +6,9 @@
           <h2> 后台管理 </h2>
         </el-col>
         <el-col :span="12">
-          <el-menu mode="horizontal"
-                   router>
+          <el-menu
+            mode="horizontal"
+            router>
             <menu-item v-for="(menu,index) in menus"
                        :key="index"
                        :item="menu"/>

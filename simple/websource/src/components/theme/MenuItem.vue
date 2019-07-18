@@ -1,7 +1,8 @@
 <template>
-  <el-submenu v-if="item.submenus && item.submenus.length>0"
-              popper-class="my-submenu"
-              :index="item.id+''">
+  <el-submenu
+    v-if="item.submenus && item.submenus.length>0"
+    popper-class="my-submenu"
+    :index="item.id+''">
     <template slot="title"> {{ item.cname }}</template>
     <menu-item v-for="(submenu,index) in item.submenus"
                :item="submenu"
@@ -17,6 +18,7 @@
 <script>
   import Vue from 'vue'
   import { Component, Prop } from 'vue-property-decorator'
+
   @Component({
     name: 'menu-item'
   })
@@ -26,7 +28,7 @@
 
     toTarget ({isMenu, routeName}) {
       if (isMenu === 1) {
-         this.$router.push({name: routeName})
+        this.$router.push({name: routeName})
       }
     }
   }
