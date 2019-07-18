@@ -1,5 +1,8 @@
 package com.ask.base.service;
 
+import com.ask.base.entity.FileInfoDetails;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +16,7 @@ public interface FileStorageService {
 	 * @param inputStream 要存储的文件
 	 * @throws Exception
 	 */
-	public boolean save(String path, InputStream inputStream) throws IOException;
+	public boolean save(FileInfoDetails fileInfoDetails, InputStream inputStream) throws IOException;
 
 	/**
 	 * 保存一个文件，用指定文件名
@@ -21,7 +24,7 @@ public interface FileStorageService {
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean save(String path, File file) throws IOException;
+	public boolean save(FileInfoDetails fileInfoDetails, File file) throws IOException;
 
 	/**
 	 * 删除指定的文件
@@ -45,6 +48,8 @@ public interface FileStorageService {
 	 * @throws Exception
 	 */
 	public InputStream getInputStream(String path) throws Exception;
+
+	String getRelativePath(String filename, UserDetails userDetails) throws IOException, Exception;
 
 	public boolean save(String path, File[] src) throws IOException;
 }

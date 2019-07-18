@@ -1,6 +1,6 @@
 package com.ask.base.controller;
-
 import com.ask.base.componet.config.FileConfig;
+import com.ask.base.componet.dto.ResultDto;
 import com.ask.base.componet.util.MyFileUtils;
 import com.ask.base.entity.BaseEntity;
 import com.ask.base.entity.FileInfoDetails;
@@ -8,6 +8,7 @@ import com.ask.base.service.FileInfoAbstactService;
 import com.ask.base.service.FileStorageService;
 import com.ask.base.service.ThumbnailService;
 import com.ask.codecreate.util.MyClassUtil;
+import com.ask.simple.componet.annotation.CurrentUser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +30,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 
-public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializable> {
+public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializable>{
     @Autowired
     private FileConfig config;
     @Autowired
@@ -42,7 +45,8 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
      *一次性上传文件
      * */
     @PostMapping
-    public List<T> upload(MultipartHttpServletRequest request) throws Exception {
+    @Transactional
+    public List<T> upload(@CurrentUser UserDetails userDetails, MultipartHttpServletRequest request) throws Exception {
         List<T> result = new ArrayList<>();
         Iterator<String> filenames = request.getFileNames();
         while (filenames.hasNext()) {
@@ -53,15 +57,14 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
                     fileInfoDetails.setFilename(MyFileUtils.getOriginalFilename(file.getOriginalFilename()));
                 }
                 fileInfoDetails.setSize(file.getSize());
-                fileInfoDetails = (FileInfoDetails)fileInfoService.save(file.getInputStream(),(T) fileInfoDetails);
+                fileInfoDetails = (FileInfoDetails)fileInfoService.save(file.getInputStream(),(T) fileInfoDetails,userDetails);
                 result.add((T) fileInfoDetails);
                 // 创建缩略图
-                thumbnailService.createThumbnail(fileInfoDetails.getPath());
+                 thumbnailService.createThumbnail(fileInfoDetails);
             }
         }
         return result;
     }
-
     /**
      * 分块上传文件
      *
@@ -81,6 +84,7 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
             @RequestHeader("file-id") String tempId,
             @RequestHeader("chunk-count") int chunkCount,
             @RequestParam("filename") String filename,
+            @CurrentUser UserDetails userDetails,
             MultipartHttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -98,10 +102,10 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
             for (int i = 0; i < chunkCount; i++) {
                 src[i] = new File(config.getTempPath() + tempId + "." + i);
             }
-            FileInfoDetails fileInfoDetails = (FileInfoDetails) MyClassUtil.getFirstClass(this.getClass()).newInstance();
+            FileInfoDetails fileInfoDetails = (FileInfoDetails)MyClassUtil.getFirstClass(this.getClass()).newInstance();
             fileInfoDetails.setFilename(filename);
             fileInfoDetails.setSize(target.length());
-            fileInfoDetails =(FileInfoDetails) fileInfoService.save(src, (T) fileInfoDetails);
+            fileInfoDetails =(FileInfoDetails) fileInfoService.save(src, (T) fileInfoDetails,userDetails);
             FileUtils.forceDelete(target);
             return (T) fileInfoDetails;
         } else {
@@ -110,7 +114,7 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
     }
     //	@ApiOperation("预览文件")
     // 使用produces指定可以接受的accept类型，当accept中包含如下信息时，返回图片
-    @GetMapping(value = "{id}", produces = {
+    @GetMapping(value = "preview/{id}", produces = {
             MediaType.IMAGE_GIF_VALUE,
             MediaType.IMAGE_JPEG_VALUE,
             MediaType.IMAGE_PNG_VALUE,
@@ -120,7 +124,7 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
             FileInfoDetails file = (FileInfoDetails)fileInfoService.findById(id);
             String fileName = file.getFilename();
             String ext = StringUtils.substringAfterLast(fileName, ".").toLowerCase();
-            if (ObjectUtils.isEmpty(config.getMime()) && StringUtils.isNotBlank(ext)) {
+            if (!ObjectUtils.isEmpty(config.getMime()) && StringUtils.isNotBlank(ext)) {
                 response.setContentType(config.getMime().get(ext));
             }
             try (InputStream is = fileStorageService.getInputStream(file.getPath());
@@ -144,7 +148,7 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
             @RequestParam(value = "level", defaultValue = "1") int level,
             HttpServletResponse response) {
         FileInfoDetails file =(FileInfoDetails) fileInfoService.findById(id);
-        if (ObjectUtils.isEmpty(file)) {
+        if (!ObjectUtils.isEmpty(file)) {
             try (InputStream iStream = thumbnailService.getStream(file.getPath(), level);
                  OutputStream oStream = response.getOutputStream()) {
                 IOUtils.copy(iStream, oStream);
@@ -169,18 +173,18 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
         OutputStream outputStream = null;
         try {
             // 清空输出流
-          response.reset();
-          response.setCharacterEncoding("UTF-8");
-          String resultFileName = URLEncoder.encode(System.currentTimeMillis()+"."+MyFileUtils.getExt(path),"UTF-8");
-          response.setHeader("Content-disposition", "attachment; filename=" + resultFileName);
-          response.setContentType(config.getMime().get(MyFileUtils.getExt(path)));
-          inputStream =   fileStorageService.getInputStream(path);
-          outputStream = new BufferedOutputStream(response.getOutputStream());
-          int bytes = 0;
-          byte[] bufferOut = new byte[1024];
-          while ((bytes = inputStream.read(bufferOut)) != -1) {
-              outputStream.write(bufferOut, 0, bytes);
-          }
+            response.reset();
+            response.setCharacterEncoding("UTF-8");
+            String resultFileName = URLEncoder.encode(System.currentTimeMillis()+"."+MyFileUtils.getExt(path),"UTF-8");
+            response.setHeader("Content-disposition", "attachment; filename=" + resultFileName);
+            response.setContentType(config.getMime().get(MyFileUtils.getExt(path)));
+            inputStream =   fileStorageService.getInputStream(path);
+            outputStream = new BufferedOutputStream(response.getOutputStream());
+            int bytes = 0;
+            byte[] bufferOut = new byte[1024];
+            while ((bytes = inputStream.read(bufferOut)) != -1) {
+                outputStream.write(bufferOut, 0, bytes);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
@@ -200,5 +204,10 @@ public class FileInfoAbstactController<T extends BaseEntity,ID extends Serializa
             }
         }
     }
-
+    /*文件下载*/
+    @DeleteMapping("{id}")
+    public ResultDto delete(@PathVariable("id") ID id) throws Exception {
+        fileInfoService.delete(id);
+        return ResultDto.success(1);
+    }
 }

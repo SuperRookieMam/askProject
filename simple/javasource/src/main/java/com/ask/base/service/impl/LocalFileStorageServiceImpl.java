@@ -1,10 +1,12 @@
 package com.ask.base.service.impl;
-
 import com.ask.base.componet.config.FileConfig;
+import com.ask.base.entity.FileInfoDetails;
 import com.ask.base.service.FileStorageService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -16,14 +18,14 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 	private FileConfig config;
 
 	@Override
-	public boolean save(String path, InputStream inputStream) throws IOException {
-		FileUtils.copyToFile(inputStream, new File(getPath(path)));
+	public boolean save(FileInfoDetails fileInfoDetails, InputStream inputStream) throws IOException {
+		FileUtils.copyToFile(inputStream, new File(getPath(fileInfoDetails.getPath())));
 		return true;
 	}
 
 	@Override
-	public boolean save(String path, File file) throws IOException {
-		FileUtils.copyFile(file, new File(getPath(path)));
+	public boolean save(FileInfoDetails fileInfoDetails, File file) throws IOException {
+		FileUtils.copyFile(file, new File(getPath(fileInfoDetails.getPath())));
 		return true;
 	}
 
@@ -41,8 +43,19 @@ public class LocalFileStorageServiceImpl implements FileStorageService {
 	public InputStream getInputStream(String path) throws Exception {
 		return new FileInputStream(getPath(path));
 	}
-
-	private String getPath(String filename) {
+	@Override
+	public String getRelativePath(String filename, UserDetails userDetails) throws Exception {
+		String realPath = getPath(ObjectUtils.isEmpty(userDetails)
+							?"public"+File.separator+filename
+							:userDetails.getUsername()+File.separator+filename);
+		return realPath.substring(realPath.indexOf(File.separator+"uploads"+File.separator)+9);
+	}
+	private String getPath(String filename) throws IOException {
+		String path = config.getPath() + File.separator + filename.substring(0,filename.lastIndexOf(File.separator));
+		 File file =new File(path);
+		if (!file.exists()){
+			FileUtils.forceMkdir(new File(path));
+		}
 		return config.getPath() + File.separator + filename;
 	}
 

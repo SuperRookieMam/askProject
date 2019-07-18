@@ -46,6 +46,48 @@ export default class FormState {
           return result
         })
       }
+    },
+    // element 上传文件的公共方法
+    upfile ({ state }, params) {
+      if (!params.file) {
+        this.$alert('请选择文件', '友情提示', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$message({
+              type: 'info',
+              message: `action: ${ action }`
+            })
+          }
+        })
+      }
+      let form = new FormData()
+      if (params.data) {
+        for (var key in params.data) {
+          form.append(key, params.data[key])
+        }
+      }
+      let headers = {}
+      headers['Content-Type'] = 'multipart/form-data'
+      let user = JSON.parse(sessionStorage.getItem('user'))
+      headers.username = user.username
+      headers.password = user.password
+      if (params.headers) {
+        for (var headername in params.headers) {
+          headers[headername] = params.data[headername]
+        }
+      }
+      let fileName = `${user.username}` + '_' + new Date().getMilliseconds()
+      form.append(fileName, params.file)
+      return httpInstance.post(params.action, form, { headers: headers }).then(data => {
+        if (params.onSuccess) {
+          params.onSuccess()
+        }
+        return data
+      }).catch(t => {
+        if (params.onError) {
+          params.onError()
+        }
+      })
     }
   }
 }

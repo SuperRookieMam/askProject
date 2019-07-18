@@ -6,6 +6,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.io.Serializable;
 
 @NoRepositoryBean
-public interface FileInfoAbstructRepository<T extends BaseEntity,ID extends Serializable> extends BaseRepository<T,ID> {
+public interface FileInfoAbstructRepository<T extends BaseEntity,ID extends Serializable> extends BaseRepository<T,ID>{
 
 }

@@ -78,10 +78,12 @@
                 <el-input v-model="formData.processUrls"/>
                 <el-upload
                   class="upload-demo"
-                  action="http://localhost:8002/fileInfo"
-                  :on-remove="handleRemoveProcess"
-                  list-type="picture"
-                  :on-success="handleAvatarSuccessProcess">
+                  :action="fileserver + fileMapping"
+                  :before-upload="beforeAvatarUpload"
+                  :on-remove="handleRemove"
+                  :file-list="fileList"
+                  :http-request="uploadFile"
+                  list-type="picture">
                   <el-button size="small" type="primary">点击上传</el-button>
                   <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
@@ -199,7 +201,7 @@
   </div>
 </template>
 <script>
-  import { Component, Prop, Mixins } from 'vue-property-decorator'
+  import {Component, Prop, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
 
   @Component
@@ -218,6 +220,8 @@
     examTable = []
     dialogFormVisible = false
     controllerMapping = 'data/food'
+
+    fileList = []
     rules = {
       name: [
         {required: true, message: '请输入活动名称', trigger: 'blur'},
@@ -232,18 +236,35 @@
     }
 
     // 添加菜品图片
-    handleAvatarSuccessImgUrl (response, file, fileList) {
-      console.log('添加菜品图片')
-      // 获取图片URL
-      var imgUrls = ''
-      imgUrls = this.formData.imgUrl
-      if (imgUrls === '' || undefined === imgUrls) {
-        imgUrls = imgUrls = file.response[0].path
-      } else {
-        imgUrls = imgUrls = imgUrls + ',' + file.response[0].path
+    handleRemove (file, fileList) {
+      this.remove(`data/${this.fileMapping}/${this.fileList[0].id}`).then(data => {
+        this.fileList = []
+        this.formData.processUrls = ''
+      })
+    }
+
+    uploadFile (params) {
+      this.upfile(params).then(result => {
+        let data = result[0]
+        data.url = `${this.fileserver}${this.fileMapping}${data.previewPath}`
+        data.name = data.filename
+        this.fileList = result
+        this.formData.processUrls = `${data.previewPath}/${data.id}`
+      })
+    }
+
+    beforeAvatarUpload (file) {
+      const isJPG = file.type === 'image/jpeg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/jpg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.message('上传头像图片只能是 JPG png jpeg 格式!', '友情提示')
       }
-      this.formData.imgUrl = imgUrls
-      console.log(this.formData.imgUrl)
+      if (!isLt2M) {
+        this.message('上传头像图片大小不能超过 2MB!', '友情提示')
+      }
+      return isJPG && isLt2M
     }
 
     // 为菜单添加试题

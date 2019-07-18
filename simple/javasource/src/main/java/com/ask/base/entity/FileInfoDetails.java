@@ -15,4 +15,16 @@ public interface FileInfoDetails {
 	 Long getSize();
 
 	 void setSize(Long path);
+
+	String getPreviewPath();
+
+	void setPreviewPath(String previewPath);
+
+	String getThumbnailPath();
+
+	void setThumbnailPath(String previewPath1);
+
+	String getThumbnailPath2();
+
+	void setThumbnailPath2(String previewPath2);
 }

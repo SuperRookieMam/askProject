@@ -14,12 +14,17 @@
    update
    @Formstate.Action('put')
    insert
-
+   @Formstate.Action('upfile')
+   upfile
    tableData = []
 
    formData = {}
 
    totalCount = 0
+
+   fileMapping = 'fileInfo'
+
+   fileserver = 'http://localhost:8002/'
    // get 请求，如果时是使用后台生成的接口用的是 dynamicParams 名字请用 dynamicParams请传true
   select (url, params, dynamicParams, flags) {
      let paramobj

@@ -17,6 +17,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -29,11 +32,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private LinkdAuthenticationFilter linkdAuthenticationFilter;
     @Autowired
     private AuthenticationFailureHandler loginFailureHandler;
+    private  static final String[] permitAll ;
+    protected static final String[] permitPath;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
              .authorizeRequests()
-             .antMatchers("/login/**","/logout/**").permitAll()
+             .antMatchers(permitAll).permitAll()
              .anyRequest().authenticated()
              .and()
              .formLogin().successHandler(loginSuccessHandler)
@@ -50,5 +56,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder getPassWordEncoder() {
         // 使用系统的加密
         return new BCryptPasswordEncoder();
+    }
+    static   {
+        List<String> templist =  new ArrayList<>();
+        templist.add("/login/**");
+        templist.add("/logout/**");
+        templist.add("/fileInfo/preview/**");
+        permitAll =  templist.toArray(new String[0]);
+        permitPath = new String[templist.size()];
+        for (int i = 0; i <templist.size() ; i++) {
+            permitPath[i] = templist.get(i).substring(0,templist.get(i).lastIndexOf("/"));
+        }
     }
 }

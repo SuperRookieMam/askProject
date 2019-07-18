@@ -1,32 +1,37 @@
 package com.ask.base.service.impl;
-
-import com.ask.base.componet.util.MyFileUtils;
 import com.ask.base.dao.FileInfoAbstructRepository;
 import com.ask.base.entity.BaseEntity;
 import com.ask.base.entity.FileInfoDetails;
 import com.ask.base.service.FileInfoAbstactService;
 import com.ask.base.service.FileStorageService;
+import com.ask.orm.componet.feature.DynamicTypeSelect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
-public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extends Serializable> implements FileInfoAbstactService<T ,ID> {
+public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extends Serializable> extends BaseServiceImpl<T ,ID> implements FileInfoAbstactService<T ,ID> {
 
     @Autowired
     private FileInfoAbstructRepository<T,ID> fileInfoRepository;
     @Autowired
     private FileStorageService storageService;
+
     @Override
     @Transactional
-    public T save(InputStream inputStream, T _info) throws Exception {
-        T dto = save(_info);
+    public T save(InputStream inputStream, T _info, UserDetails userDetails) throws Exception {
+        T dto = save(_info, userDetails);
         FileInfoDetails fileInfoDetails = (FileInfoDetails)dto;
-        if (storageService.save(fileInfoDetails.getPath(), inputStream)){
+        if (storageService.save(fileInfoDetails, inputStream)){
+            fileInfoDetails.setPreviewPath("/preview/" + fileInfoDetails.getId());
             return dto;
         }else {
             throw new RuntimeException("上传文件异常");
@@ -35,10 +40,11 @@ public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extend
 
     @Override
     @Transactional
-    public T save(File file, T _info) throws Exception {
-        _info = save(_info);
+    public T save(File file, T _info, UserDetails userDetails) throws Exception {
+        _info = save(_info,userDetails);
         FileInfoDetails fileInfoDetails =(FileInfoDetails)_info;
-        if (storageService.save(fileInfoDetails.getPath(), file)){
+        if (storageService.save(fileInfoDetails, file)){
+            fileInfoDetails.setPreviewPath("/preview/" + fileInfoDetails.getId());
             return _info;
         }else {
             throw new RuntimeException("上传文件异常");
@@ -46,20 +52,23 @@ public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extend
     }
     @Override
     @Transactional
-    public T save(File[] src, T fileInfo) throws IOException {
-        fileInfo = save(fileInfo);
+    public T save(File[] src, T fileInfo, UserDetails userDetails) throws Exception {
+        fileInfo = save(fileInfo,userDetails);
         FileInfoDetails fileInfoDetails = (FileInfoDetails)fileInfo;
         if (storageService.save(fileInfoDetails.getPath(), src)){
+            fileInfoDetails.setPreviewPath("/preview/" + fileInfoDetails.getId());
             return fileInfo;
         }else {
             throw new RuntimeException("上传文件异常");
         }
     }
-    private T save(T fileInfo) {
-        FileInfoDetails fileInfoDetails = (FileInfoDetails)fileInfoRepository.save(fileInfo);
-        String filename = fileInfoDetails.getFilename();
-        String ext = MyFileUtils.getExt(filename);
-        String storagePath = fileInfoDetails.getId() + "." + ext;
+    private T save(T fileInfo, UserDetails userDetails) throws Exception {
+        FileInfoDetails fileInfoDetails = (FileInfoDetails)fileInfo;
+        FileInfoDetails fileInfoDetails1 = findByFileName(fileInfoDetails.getFilename());
+        fileInfoDetails =ObjectUtils.isEmpty(fileInfoDetails1)
+                                ? (FileInfoDetails) fileInfoRepository.save(fileInfo)
+                                :fileInfoDetails1;
+        String storagePath = storageService.getRelativePath(fileInfoDetails.getFilename(),userDetails);
         fileInfoDetails.setPath(storagePath);
         fileInfo = (T) fileInfoDetails;
         fileInfo = fileInfoRepository.save(fileInfo);
@@ -76,10 +85,15 @@ public abstract class FileInfoAbstractServiceImpl<T extends BaseEntity,ID extend
         }
         fileInfoRepository.deleteById(id);
     }
-
-    @Override
-    public T  findById(ID id){
-      Optional<T> optional =  fileInfoRepository.findById(id);
-      return optional.isPresent()?optional.get():null;
+    private FileInfoDetails findByFileName (String fileName) {
+       DynamicTypeSelect dynamicTypeSelect = getBaseRepository().getDynamicTypeSelect();
+        dynamicTypeSelect.dynamicBuild(ele -> {
+            Predicate predicate =ele.flat.addEq("filename",fileName, JoinType.LEFT).and();
+            ele.query.where(predicate);
+            return predicate;
+        });
+        List<T> list = dynamicTypeSelect.getResult();
+        return list.isEmpty()? null: (FileInfoDetails) list.get(0);
     }
+
 }

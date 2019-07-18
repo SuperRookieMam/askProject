@@ -1,13 +1,15 @@
 package com.ask.base.service.impl;
-
 import com.ask.base.componet.config.FileConfig;
 import com.ask.base.componet.util.MyFileUtils;
+import com.ask.base.entity.FileInfoDetails;
 import com.ask.base.service.ThumbnailService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -29,12 +31,13 @@ public class LocalThumbnailServiceImpl implements ThumbnailService {
 	private static final String[] imgExt = { "jpg", "png", "bmp" };
 
 	@Override
-	public void createThumbnail(String filename) {
-		String ext = MyFileUtils.getExt(filename);
+	public void createThumbnail(FileInfoDetails fileInfoDetails) {
+		String path = fileInfoDetails.getPath();
+		String ext = MyFileUtils.getExt(path);
 		if (ArrayUtils.contains(imgExt, ext)) {
-			try (InputStream iStream = new FileInputStream(getPath(filename));
-					OutputStream oStream = getOutputStream(1, filename);
-					OutputStream oStream2 = getOutputStream(2, filename)) {
+			try (InputStream iStream = new FileInputStream(getPath(path));
+					OutputStream oStream = getOutputStream(1, path);
+					OutputStream oStream2 = getOutputStream(2, path)) {
 				Image image = ImageIO.read(iStream);
 				int o_w = image.getWidth(null);
 				int o_h = image.getHeight(null);
@@ -50,8 +53,11 @@ public class LocalThumbnailServiceImpl implements ThumbnailService {
 				bi2.getGraphics().drawImage(image, 0, 0, n2_w, n2_h, null);
 				ImageIO.write(bi, "jpg", oStream);
 				ImageIO.write(bi2, "jpg", oStream2);
+				fileInfoDetails.setThumbnailPath(l1+path);
+				fileInfoDetails.setThumbnailPath2(l2+path);
 			} catch (Exception e) {
-				log.error("创建文件缩略图时出错", e);
+				e.printStackTrace();
+				throw new RuntimeException("创建缩略图失败");
 			}
 		}
 	}
@@ -70,18 +76,40 @@ public class LocalThumbnailServiceImpl implements ThumbnailService {
 		FileUtils.forceMkdir(new File(l2));
 	}
 
-	private OutputStream getOutputStream(int level, String path) throws FileNotFoundException {
+	private OutputStream getOutputStream(int level, String path) throws IOException {
 		switch (level) {
 		case 1:
-			return new FileOutputStream(l1 + path + ".jpg");
+			String tempPath = l1 + path;
+			tempPath = tempPath.substring(0,tempPath.lastIndexOf(File.separator));
+			File file =new File(tempPath);
+			if (!file.exists()) {
+				FileUtils.forceMkdir(file);
+			}
+			return new FileOutputStream(l1 + path);
 		case 2:
-			return new FileOutputStream(l2 + path + ".jpg");
+			String tempPath2 = l2 + path;
+			tempPath2 = tempPath2.substring(0,tempPath2.lastIndexOf(File.separator));
+			File file2 =new File(tempPath2);
+			if (!file2.exists()) {
+				FileUtils.forceMkdir(file2);
+			}
+			return new FileOutputStream(l2 + path);
 		}
 		return null;
 	}
-
-	private String getPath(String filename) {
-		return fileConfig.getPath() + File.separator + filename;
+	public String getRelativePath(String filename, UserDetails userDetails) throws Exception {
+		String realPath = getPath(ObjectUtils.isEmpty(userDetails)
+				?"public"+File.separator+filename
+				:userDetails.getUsername()+File.separator+filename);
+		return realPath.substring(realPath.indexOf(File.separator+"uploads"+File.separator)+9);
+	}
+	private String getPath(String filename) throws IOException {
+		String path = fileConfig.getPath() + File.separator + filename;
+		File file =new File(path);
+		if (!file.exists()){
+			FileUtils.forceMkdir(new File(path));
+		}
+		return path;
 	}
 
 	private String getPath(String filename, int level) {
