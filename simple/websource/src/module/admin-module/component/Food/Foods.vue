@@ -27,18 +27,6 @@
     <el-table :data="tableData"
               style="width: 100%">
       <el-table-column
-        label="createTime"
-        prop="createTime"/>
-      <el-table-column
-        label="modifyTime"
-        prop="modifyTime"/>
-      <el-table-column
-        label="createUser"
-        prop="createUser"/>
-      <el-table-column
-        label="modifyUser"
-        prop="modifyUser"/>
-      <el-table-column
         label="id"
         prop="id"/>
       <el-table-column

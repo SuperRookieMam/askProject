@@ -9,41 +9,6 @@
         <el-tab-pane label="基础信息" name="base">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="createTime" prop="createTime">
-                <el-input v-model="formData.createTime"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="modifyTime" prop="modifyTime">
-                <el-input v-model="formData.modifyTime"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="createUser" prop="createUser">
-                <el-input v-model="formData.createUser"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="modifyUser" prop="modifyUser">
-                <el-input v-model="formData.modifyUser"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="id" prop="id">
-                <el-input v-model="formData.id"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
               <el-form-item label="菜品名" prop="foodName">
                 <el-input v-model="formData.foodName"/>
               </el-form-item>
@@ -58,14 +23,16 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="图片url" prop="imgUrl">
+              <el-form-item label="菜品图片" prop="processUrls">
                 <el-input v-model="formData.imgUrl"/>
                 <el-upload
                   class="upload-demo"
-                  action="http://localhost:8002/fileInfo"
-                  :on-remove="handleRemoveImgUrl"
-                  list-type="picture"
-                  :on-success="handleAvatarSuccessImgUrl">
+                  :action="fileserver + fileMapping"
+                  :before-upload="beforeAvatarUpload"
+                  :on-remove="handleRemoveImg"
+                  :file-list="fileListImg"
+                  :http-request="uploadFileImg"
+                  list-type="picture">
                   <el-button size="small" type="primary">点击上传</el-button>
                   <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                 </el-upload>
@@ -249,16 +216,17 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item>
+                <el-button type="primary" @click="submitExam()">
+                  确认
+                </el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-tab-pane>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item>
-              <el-button type="primary" @click="submitExam()">
-                保存
-              </el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
+
       </el-tabs>
     </el-form>
   </div>
@@ -309,6 +277,8 @@
     controllerMapping = 'data/food'
 
     fileList = []
+
+    fileListImg=[]
     rules = {
       name: [
         {required: true, message: '请输入活动名称', trigger: 'blur'},
@@ -322,11 +292,19 @@
          } */
     }
 
-    // 添加菜品图片
+    // 删除烹调图片
     handleRemove (file, fileList) {
       this.remove(`data/${this.fileMapping}/${this.fileList[0].id}`).then(data => {
         this.fileList = []
         this.formData.processUrls = ''
+      })
+    }
+
+    // 删除菜品图片
+    handleRemoveImg (file, fileList) {
+      this.remove(`data/${this.fileMapping}/${this.fileList[0].id}`).then(data => {
+        this.fileListImg = []
+        this.formData.imgUrl = ''
       })
     }
 
@@ -337,6 +315,16 @@
         data.name = data.filename
         this.fileList = result
         this.formData.processUrls = `${data.previewPath}/${data.id}`
+      })
+    }
+
+    uploadFileImg (params) {
+      this.upfile(params).then(result => {
+        let data = result[0]
+        data.url = `${this.fileserver}${this.fileMapping}${data.previewPath}`
+        data.name = data.filename
+        this.fileListImg = result
+        this.formData.imgUrl = `${data.previewPath}/${data.id}`
       })
     }
 
@@ -420,7 +408,7 @@
     //修改试题
     editExam(exam){
     this.dialogFormVisible=true
-      this.newResult=exam
+      this.newExamt=exam
 
     }
 
