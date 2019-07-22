@@ -23,7 +23,7 @@ public class Result extends BaseEntity {
     private Long id;
 
     // 答案描述，答案的文字
-    @Column(name = "description_",unique = true)
+    @Column(name = "description_")
     @Description(label = "答案")
     private String description;
 

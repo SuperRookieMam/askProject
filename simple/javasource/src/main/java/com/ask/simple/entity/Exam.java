@@ -33,7 +33,7 @@ public class Exam extends BaseEntity {
     @Description(label = "题目类型")
     private String subjectName;
 
-    @Column(name = "description_",unique = true)
+    @Column(name = "description_")
     @Description(label = "题目描述")
     private String description;
 

@@ -349,12 +349,10 @@
       //未持久化的
       if(this.newExam.id===null||undefined===this.newExam.id||this.newExam.id===""){
         for(var i in  this.examTable){
-          alert("位置"+this.examPosition)
-          alert("位置"+i)
           if(this.examTable[i].subjectName===this.newExam.subjectName&& this.examPosition!==i){
             alert("已存在相同题目，请检查")
             return;
-          }else  if(this.examPosition ===i){
+          }else if(this.examPosition ===i){
             this.examTable[i].description=this.newExam.description
             this.examTable[i].subjectName=this.newExam.subjectName
             this.examTable[i].choose=this.newExam.choose
@@ -374,9 +372,12 @@
       }else  if(this.newExam.id!==null&&undefined!==this.newExam.id&&this.newExam.id!==""){
         for(var i in  this.examTable){
           if(this.examTable[i].id!==this.newExam.id&&this.examTable[i].subjectName===this.newExam.subjectName){
+            alert("-----")
             alert("已存在相同题目，请检查")
             return;
           }
+        }
+        for(var i in this.examTable){
           if(this.examTable[i].id===this.newExam.id){
             this.examTable[i].description=this.newExam.description
             this.examTable[i].subjectName=this.newExam.subjectName
