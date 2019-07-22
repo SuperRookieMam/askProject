@@ -28,8 +28,8 @@ public class Exam extends BaseEntity {
     @Description(label = "id")
     private Long id;
 
-    //即问题名字
-    @Column(name = "subject_name_",unique = true)
+    //题目
+    @Column(name = "subject_name_")
     @Description(label = "题目类型")
     private String subjectName;
 

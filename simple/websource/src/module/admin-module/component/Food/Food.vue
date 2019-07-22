@@ -87,7 +87,7 @@
             <el-form :model="newExam" ref="rootForm" :rules="rules">
               <el-form-item label="id" prop="id">
                 <el-col :span="18">
-                  <el-input v-model="newExam.id"/>
+                  <el-input v-model="newExam.id"  disabled="false"/>
                 </el-col>
               </el-form-item>
               <el-form-item label="题目" prop="subjectName">
@@ -111,7 +111,7 @@
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="cancelAddRoot">取 消</el-button>
+              <el-button @click="cancelExam">取 消</el-button>
               <el-button type="primary" @click="addExamTable('')">确 定</el-button>
             </div>
           </el-dialog>
@@ -159,7 +159,7 @@
                     <el-form :model="newResult" ref="rootForm" :rules="rules">
                       <el-form-item label="id" prop="id">
                         <el-col :span="18">
-                          <el-input v-model="newResult.id"/>
+                          <el-input v-model="newResult.id" disabled="false"/>
                         </el-col>
                       </el-form-item>
                       <el-form-item label="描述" prop="description">
@@ -267,6 +267,8 @@
       choose: '',
       results: []
     }
+    //未持久化的试题位置
+    examPosition=""
     // 答案字符串
     newResult={
       id:'',
@@ -344,6 +346,53 @@
 
     // 为菜单添加试题
     addExamTable () {
+      //未持久化的
+      if(this.newExam.id===null||undefined===this.newExam.id||this.newExam.id===""){
+        for(var i in  this.examTable){
+          alert("位置"+this.examPosition)
+          alert("位置"+i)
+          if(this.examTable[i].subjectName===this.newExam.subjectName&& this.examPosition!==i){
+            alert("已存在相同题目，请检查")
+            return;
+          }else  if(this.examPosition ===i){
+            this.examTable[i].description=this.newExam.description
+            this.examTable[i].subjectName=this.newExam.subjectName
+            this.examTable[i].choose=this.newExam.choose
+            this.dialogFormVisible = false
+            this.newExam = {
+              id: '',
+              subjectName: '',
+              description: '',
+              choose: '',
+              results: []
+            }
+            this.examPosition=""
+            return
+          }
+
+        }
+      }else  if(this.newExam.id!==null&&undefined!==this.newExam.id&&this.newExam.id!==""){
+        for(var i in  this.examTable){
+          if(this.examTable[i].id!==this.newExam.id&&this.examTable[i].subjectName===this.newExam.subjectName){
+            alert("已存在相同题目，请检查")
+            return;
+          }
+          if(this.examTable[i].id===this.newExam.id){
+            this.examTable[i].description=this.newExam.description
+            this.examTable[i].subjectName=this.newExam.subjectName
+            this.examTable[i].choose=this.newExam.choose
+            this.dialogFormVisible = false
+            this.newExam = {
+              id: '',
+              subjectName: '',
+              description: '',
+              choose: '',
+              results: []
+            }
+            return
+          }
+        }
+      }
       this.examTable.push(this.newExam)
       console.log(this.newExam)
       this.dialogFormVisible = false
@@ -354,6 +403,16 @@
         choose: '',
         results: []
       }
+    }
+    cancelExam(){
+      this.newExam = {
+        id: '',
+        subjectName: '',
+        description: '',
+        choose: '',
+        results: []
+      }
+      this.dialogFormVisible=false
     }
     //删除选中试题
     deleteExam(exam){
@@ -407,9 +466,13 @@
 
     //修改试题
     editExam(exam){
-    this.dialogFormVisible=true
-      this.newExamt=exam
-
+      for(var i in this.examTable){
+        if(exam.subjectName === this.examTable[i].subjectName){
+          this.examPosition=i;
+        }
+      }
+      this.newExam=exam
+      this.dialogFormVisible=true
     }
 
     // 移除菜品图片
