@@ -83,11 +83,11 @@
                      @click="addExam()">
             新增题目
           </el-button>
-          <el-dialog title="根节点信息录入" :visible.sync="dialogFormVisible">
+          <el-dialog title="题目录入" :visible.sync="dialogFormVisible">
             <el-form :model="newExam" ref="rootForm" :rules="rules">
               <el-form-item label="id" prop="id">
                 <el-col :span="18">
-                  <el-input v-model="newExam.id"  disabled="false"/>
+                  <el-input v-model="newExam.id" disabled="false"/>
                 </el-col>
               </el-form-item>
               <el-form-item label="题目" prop="subjectName">
@@ -121,20 +121,36 @@
             style="width: 100%">
             <el-table-column type="expand">
               <template slot-scope="props">
-                <el-form label-position="left" inline class="demo-table-expand">
-                  <el-form-item label="id">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="题目">
-                    <span>{{ props.row.subjectName }}</span>
-                  </el-form-item>
-                  <el-form-item label="题型">
-                    <span>{{ props.row.choose }}</span>
-                  </el-form-item>
-                  <el-form-item label="描述">
-                    <span>{{ props.row.description }}</span>
-                  </el-form-item>
-                </el-form>
+                <!--<el-form label-position="left" inline class="demo-table-expand">-->
+                <!--<el-form-item label="id">-->
+                <!--<span>{{ props.row.id }}</span>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="题目">-->
+                <!--<span>{{ props.row.subjectName }}</span>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="题型">-->
+                <!--<span>{{ props.row.choose }}</span>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="描述">-->
+                <!--<span>{{ props.row.description }}</span>-->
+                <!--</el-form-item>-->
+                <!--</el-form>-->
+                <table border="1">
+                  <tr>
+                    <th>id</th>
+                    <th>答案名</th>
+                    <th>分数</th>
+                    <th>正确/错误</th>
+                    <th>操作</th>
+                  </tr>
+                  <tr v-for=" item in props.results" :key="item">
+                    <th>{{ item.id }}   </th>
+                    <th>{{ item.description }}</th>
+                    <th>{{ item.score }}</th>
+                    <th>{{ item.right }}</th>
+                    <th>  <el-button type="text" size="mini" @click="addResultView(scope.row)">删除</el-button> </th>
+                  </tr>
+                </table>
               </template>
             </el-table-column>
             <el-table-column
@@ -148,70 +164,43 @@
               prop="choose"/>
             <el-table-column
               label="描述"
-              prop="description">
+              prop="description"/>
+            <el-table-column>
               <template slot-scope="scope">
-                <el-popover
-                  ref="popover4"
-                  placement="right"
-                  width="800"
-                  trigger="click">
-                  <el-dialog title="新增答案" :visible.sync="dialogFormVisibleResult">
-                    <el-form :model="newResult" ref="rootForm" :rules="rules">
-                      <el-form-item label="id" prop="id">
-                        <el-col :span="18">
-                          <el-input v-model="newResult.id" disabled="false"/>
-                        </el-col>
-                      </el-form-item>
-                      <el-form-item label="描述" prop="description">
-                        <el-col :span="18">
-                          <el-input v-model="newResult.description"/>
-                        </el-col>
-                      </el-form-item>
-                      <el-form-item label="正确？" prop="right">
-                        <el-select v-model="newResult.right" placeholder="请选择">
-                          <el-option
-                            v-for="item in options2"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"/>
-                        </el-select>
-                      </el-form-item>
-                      <el-form-item label="分值" prop="score">
-                        <el-col :span="18">
-                          <el-input v-model="newResult.score"/>
-                        </el-col>
-                      </el-form-item>
-                    </el-form>
-                    <div slot="footer" class="dialog-footer">
-                      <el-button @click="cancelAddRoot">取 消</el-button>
-                      <el-button type="primary" @click="addResultTable()">确 定</el-button>
-                    </div>
-                  </el-dialog>
-                  <el-button type="primary"
-                             size="mini"
-                             @click="addResultView()">
-                    新增答案
-                  </el-button>
-                  <el-button type="primary"
-                             size="mini"
-                             @click="addResultToExam(scope.row)">
-                    确定将答案放入试题
-                  </el-button>
-                  <el-table :data="resultTable">
-                    <el-table-column
-                      label="题型"
-                      prop="scope.row.choose"/>
-                    <el-table-column
-                      label="题目"
-                      prop="scope.row.resultTable"/>
-                    <el-table-column width="150" property="id" label="id"></el-table-column>
-                    <el-table-column width="100" property="description" label="描述"></el-table-column>
-                    <el-table-column width="300" property="score" label="得分"></el-table-column>
-                    <el-table-column width="300" property="right" label="是否正确"></el-table-column>
-                  </el-table>
-                </el-popover>
-                <el-button v-popover:popover4>添加答案</el-button>
-              <el-button type="text" size="mini" @click="deleteExam(scope.row)">删除试题</el-button>
+                <el-dialog title="新增答案" :visible.sync="dialogFormVisibleResult">
+                  <el-form :model="newResult" ref="rootForm" :rules="rules">
+                    <el-form-item label="id" prop="id">
+                      <el-col :span="18">
+                        <el-input v-model="newResult.id" disabled="false"/>
+                      </el-col>
+                    </el-form-item>
+                    <el-form-item label="答案" prop="description">
+                      <el-col :span="18">
+                        <el-input v-model="newResult.description"/>
+                      </el-col>
+                    </el-form-item>
+                    <el-form-item label="正确？" prop="right">
+                      <el-select v-model="newResult.right" placeholder="请选择">
+                        <el-option
+                          v-for="item in options2"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"/>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="分值" prop="score">
+                      <el-col :span="18">
+                        <el-input v-model="newResult.score"/>
+                      </el-col>
+                    </el-form-item>
+                  </el-form>
+                  <div slot="footer" class="dialog-footer">
+                    <el-button @click="cancelAddRootResult">取 消</el-button>
+                    <el-button type="primary" @click="addResultTable()">确 定</el-button>
+                  </div>
+                </el-dialog>
+                <el-button type="text" size="mini" @click="addResultView(scope.row)">新增答案</el-button>
+                <el-button type="text" size="mini" @click="deleteExam(scope.row)">删除试题</el-button>
                 <el-button type="text" size="mini" @click="editExam(scope.row)">修改试题</el-button>
               </template>
             </el-table-column>
@@ -226,7 +215,6 @@
             </el-col>
           </el-row>
         </el-tab-pane>
-
       </el-tabs>
     </el-form>
   </div>
@@ -259,7 +247,7 @@
     resultTable=[]
     dialogFormVisible = false
     dialogFormVisibleResult=false
-    //试题字符串
+    // 试题字符串
     newExam = {
       id: '',
       subjectName: '',
@@ -267,14 +255,15 @@
       choose: '',
       results: []
     }
-    //未持久化的试题位置
-    examPosition=""
+    // 未持久化的试题位置
+    examPosition=''
     // 答案字符串
     newResult={
-      id:'',
-      description:'',
-      score:'',
-      right:''
+      id: '',
+      description: '',
+      score: '',
+      right: '',
+      parentName: ''
     }
     controllerMapping = 'data/food'
 
@@ -346,16 +335,16 @@
 
     // 为菜单添加试题
     addExamTable () {
-      //未持久化的
-      if(this.newExam.id===null||undefined===this.newExam.id||this.newExam.id===""){
-        for(var i in  this.examTable){
-          if(this.examTable[i].subjectName===this.newExam.subjectName&& this.examPosition!==i){
-            alert("已存在相同题目，请检查")
-            return;
-          }else if(this.examPosition ===i){
-            this.examTable[i].description=this.newExam.description
-            this.examTable[i].subjectName=this.newExam.subjectName
-            this.examTable[i].choose=this.newExam.choose
+      // 未持久化的
+      if (this.newExam.id === null || undefined === this.newExam.id || this.newExam.id === '') {
+        for (var i in this.examTable) {
+          if (this.examTable[i].subjectName === this.newExam.subjectName && this.examPosition !== i) {
+            alert('已存在相同题目，请检查')
+            return
+          } else if (this.examPosition === i) {
+            this.examTable[i].description = this.newExam.description
+            this.examTable[i].subjectName = this.newExam.subjectName
+            this.examTable[i].choose = this.newExam.choose
             this.dialogFormVisible = false
             this.newExam = {
               id: '',
@@ -364,24 +353,22 @@
               choose: '',
               results: []
             }
-            this.examPosition=""
+            this.examPosition = ''
             return
           }
-
         }
-      }else  if(this.newExam.id!==null&&undefined!==this.newExam.id&&this.newExam.id!==""){
-        for(var i in  this.examTable){
-          if(this.examTable[i].id!==this.newExam.id&&this.examTable[i].subjectName===this.newExam.subjectName){
-            alert("-----")
-            alert("已存在相同题目，请检查")
-            return;
+      } else if (this.newExam.id !== null && undefined !== this.newExam.id && this.newExam.id !== '') {
+        for (var o in this.examTable) {
+          if (this.examTable[o].id !== this.newExam.id && this.examTable[o].subjectName === this.newExam.subjectName) {
+            alert('已存在相同题目，请检查')
+            return
           }
         }
-        for(var i in this.examTable){
-          if(this.examTable[i].id===this.newExam.id){
-            this.examTable[i].description=this.newExam.description
-            this.examTable[i].subjectName=this.newExam.subjectName
-            this.examTable[i].choose=this.newExam.choose
+        for (var x in this.examTable) {
+          if (this.examTable[x].id === this.newExam.id) {
+            this.examTable[x].description = this.newExam.description
+            this.examTable[x].subjectName = this.newExam.subjectName
+            this.examTable[x].choose = this.newExam.choose
             this.dialogFormVisible = false
             this.newExam = {
               id: '',
@@ -394,6 +381,7 @@
           }
         }
       }
+      // 新增
       this.examTable.push(this.newExam)
       console.log(this.newExam)
       this.dialogFormVisible = false
@@ -405,7 +393,7 @@
         results: []
       }
     }
-    cancelExam(){
+    cancelExam () {
       this.newExam = {
         id: '',
         subjectName: '',
@@ -413,26 +401,38 @@
         choose: '',
         results: []
       }
-      this.dialogFormVisible=false
+      this.dialogFormVisible = false
     }
-    //删除选中试题
-    deleteExam(exam){
+    // 删除选中试题
+    deleteExam (exam) {
       for (var m = 0; m < this.examTable.length; m++) {
         if (this.examTable[m] === exam) {
-          this.examTable.splice(m, 1);
-          return;
+          this.examTable.splice(m, 1)
+          return
         }
       }
     }
-    addResultTable(){
-      this.resultTable.push(this.newResult)
-      this.newResult={
-        id:'',
-        description:'',
-        score:'',
-        right:''
+     addResultTable () {
+      for (var n in this.examTable) {
+        if (this.examTable[n].subjectName === this.newResult.parentName) {
+              for (var x in this.examTable[n].results) {
+                if (this.examTable[n].results[x].description === this.newResult.description) {
+                  alert('该题目答案已经存在')
+                  return
+                }
+              }
+          delete this.newResult.parentName
+          this.examTable[n].results.push(this.newResult)
+        }
       }
-      this.dialogFormVisibleResult=false
+      this.newResult = {
+        id: '',
+        description: '',
+        score: '',
+        right: '',
+        parentName: ''
+      }
+      this.dialogFormVisibleResult = false
       console.log(this.resultTable)
     }
     // 取消为菜单添加试题
@@ -451,29 +451,27 @@
   // 为试题添加答案
     addResultToExam (exam) {
       console.log(exam)
-      this.newExam=exam
-      this.newExam.results=this.resultTable
+      this.newExam = exam
+      this.newExam.results = this.resultTable
       for (var m = 0; m < this.examTable.length; m++) {
-        if (this.examTable[m].subjectName=== exam.subjectName) {
-          this.examTable.splice(m, 1);
+        if (this.examTable[m].subjectName === exam.subjectName) {
+          this.examTable.splice(m, 1)
           this.examTable.push(this.newExam)
           console.log(this.newExam)
-          return;
+          return
         }
       }
-
     }
 
-
-    //修改试题
-    editExam(exam){
-      for(var i in this.examTable){
-        if(exam.subjectName === this.examTable[i].subjectName){
-          this.examPosition=i;
+    // 修改试题
+    editExam (exam) {
+      for (var i in this.examTable) {
+        if (exam.subjectName === this.examTable[i].subjectName) {
+          this.examPosition = i
         }
       }
-      this.newExam=exam
-      this.dialogFormVisible=true
+      this.newExam = exam
+      this.dialogFormVisible = true
     }
 
     // 移除菜品图片
@@ -554,18 +552,21 @@
     addExam () {
       this.dialogFormVisible = true
     }
-    addResultView(){
-      this.dialogFormVisibleResult=true
+    addResultView (exam) {
+       this.newResult.parentName = exam.subjectName
+       this.dialogFormVisibleResult = true
+    }
+    cancelAddRootResult () {
+      alert('取消新增答案')
+      this.dialogFormVisibleResult = false
     }
     created () {
-      this.getFormData(this.controllerMapping, this.id).then(data =>{
+      this.getFormData(this.controllerMapping, this.id).then(data => {
         console.log(data)
         if (data.exams !== null) {
           this.examTable = data.exams
         }
       })
-
-
     }
   }
 </script>

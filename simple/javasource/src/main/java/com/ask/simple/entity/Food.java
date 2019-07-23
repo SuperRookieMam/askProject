@@ -31,7 +31,7 @@ public class Food extends BaseEntity {
     @Description(label = "id")
     private Long id;
 
-    @Column(name = "food_name_",unique = true)
+    @Column(name = "food_name_")
     @Description(label = "菜品名")
     private String foodName;
 
