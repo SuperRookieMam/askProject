@@ -135,7 +135,7 @@
                 <!--<span>{{ props.row.description }}</span>-->
                 <!--</el-form-item>-->
                 <!--</el-form>-->
-                <table border="1">
+                <table border="0">
                   <tr>
                     <th>id</th>
                     <th>答案名</th>
@@ -143,12 +143,20 @@
                     <th>正确/错误</th>
                     <th>操作</th>
                   </tr>
-                  <tr v-for=" item in props.results" :key="item">
-                    <th>{{ item.id }}   </th>
-                    <th>{{ item.description }}</th>
-                    <th>{{ item.score }}</th>
-                    <th>{{ item.right }}</th>
-                    <th>  <el-button type="text" size="mini" @click="addResultView(scope.row)">删除</el-button> </th>
+                  <tr v-for=" item in props.row.results" :key="item">
+                    <th><el-input :value="item.id" type="text"/>   </th>
+                    <th><el-input :value="item.description" type="text"/></th>
+                    <th><el-input :value="item.score" type="text"/></th>
+                    <th>
+                      <el-select :value="item.right" placeholder="请选择">
+                        <el-option
+                          v-for="item2 in options2"
+                          :key="item2.value"
+                          :label="item2.label"
+                          :value="item2.value"/>
+                      </el-select>
+                    </th>
+                    <th> <el-button type="text" size="mini" @click="deleteResult(props.row,item)">删除</el-button> </th>
                   </tr>
                 </table>
               </template>
@@ -275,6 +283,14 @@
         {required: true, message: '请输入活动名称', trigger: 'blur'},
         {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
       ]
+    }
+
+    rightName (right) {
+      if (right === true) {
+        return '正确'
+      } else {
+        return '错误'
+      }
     }
 
     handleClick (tab, event) {
@@ -555,6 +571,23 @@
     addResultView (exam) {
        this.newResult.parentName = exam.subjectName
        this.dialogFormVisibleResult = true
+    }
+    editResult (result) {
+      console.log(result)
+    }
+    deleteResult (exam, result) {
+      for (var k in this.examTable) {
+        // 确定是哪个题
+        if (exam.subjectName === this.examTable[k].subjectName) {
+          // 获取到哪个答案
+            for (var l in this.examTable[k].results) {
+                if (result.description === this.examTable[k].results[l].description) {
+                  this.examTable[k].results.splice(l, 1)
+                  return
+                }
+            }
+        }
+      }
     }
     cancelAddRootResult () {
       alert('取消新增答案')
