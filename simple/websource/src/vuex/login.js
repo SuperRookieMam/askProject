@@ -5,7 +5,7 @@ const loginInstance = axios.create({
   // 登录的数据格式，使用form表单格式
   transformRequest: [(data, headers) => qs.stringify(data, { arrayFormat: 'repeat' })]
 })
-const CT = CONTEXT_PATH + 'data/'
+const CT = CONTEXT_PATH + 'data1/'
 export default {
   namespaced: true,
   state: {

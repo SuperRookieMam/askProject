@@ -5,7 +5,7 @@ import Login from './login'
 import FormState from './FormState'
 
 Vue.use(Vuex) // use必须在创建store实例之前调用
-const CTX = CONTEXT_PATH + 'data/'
+const CTX = CONTEXT_PATH + 'data1/'
 export default new Store({
   namespaced: true,
   state: {

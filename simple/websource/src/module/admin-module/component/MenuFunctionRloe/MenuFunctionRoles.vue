@@ -119,7 +119,7 @@
 
     routeName = 'menuFunctionRole'
 
-    controllerMapping = 'data/menuFunctionRole'
+    controllerMapping = 'data1/menuFunctionRole'
 
     handleSizeChange (val) {
       this.params.pageSize = val

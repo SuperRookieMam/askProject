@@ -90,7 +90,7 @@
     @Prop({default: () => 'new'})
     id
     activeName = 'base'
-    controllerMapping = 'data/menuFunctionRole'
+    controllerMapping = 'data1/menuFunctionRole'
     rules = {
       name: [
         {required: true, message: '请输入活动名称', trigger: 'blur'},

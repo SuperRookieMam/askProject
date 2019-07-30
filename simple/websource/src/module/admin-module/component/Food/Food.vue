@@ -273,7 +273,7 @@
       right: '',
       parentName: ''
     }
-    controllerMapping = 'data/food'
+    controllerMapping = 'data1/food'
 
     fileList = []
 

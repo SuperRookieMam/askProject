@@ -111,12 +111,12 @@
     allnodeSelcted = []
     menuRoleSelect = []
     refreshTree () {
-      this.select('data/menuFunction/list', {}, true).then(data => {
+      this.select('data1/menuFunction/list', {}, true).then(data => {
         this.menuTree = this.getTree(data, 'children', 'pid')
       })
     }
     roleList () {
-      this.select('data/roleInfo/list', {}, true).then(data => {
+      this.select('data1/roleInfo/list', {}, true).then(data => {
         this.redios = data
       })
     }
@@ -163,7 +163,7 @@
             value: this.rediosSelect
           }]
         }
-        this.select('data/menuFunctionRole/list', params, true).then(data => {
+        this.select('data1/menuFunctionRole/list', params, true).then(data => {
             let param = {
               basicsParams: [{
                 key: 'id',
@@ -171,7 +171,7 @@
                 value: data.map(ele => ele.menuFunctionId)
               }]
             }
-            this.select('data/menuFunction/list', param, true).then(data1 => {
+            this.select('data1/menuFunction/list', param, true).then(data1 => {
                  this.menuRoleTree = this.getTree(data1, 'children', 'pid')
             })
         })
@@ -197,7 +197,7 @@
         tempnodes.push(meunuRole)
       })
       if (tempnodes.length > 0) {
-        this.insert({url: 'data/menuFunctionRole', params: tempnodes}).then(data => {
+        this.insert({url: 'data1/menuFunctionRole', params: tempnodes}).then(data => {
               this.getRoleMenu()
         })
       }
@@ -222,7 +222,7 @@
           value: this.menuRoleSelect.map(ele => ele.id)
         }]
       }
-      this.remove('data/menuFunctionRole/params', params, true).then(data => {
+      this.remove('data1/menuFunctionRole/params', params, true).then(data => {
         this.menuRoleSelect = []
         this.getRoleMenu()
       })

@@ -78,7 +78,7 @@
 
     routeName = 'food'
 
-    controllerMapping = 'data/food'
+    controllerMapping = 'data1/food'
 
     handleSizeChange (val) {
      this.params.pageSize = val

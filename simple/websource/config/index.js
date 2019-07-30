@@ -12,10 +12,10 @@ module.exports = {
     assetsPublicPath: '/', // 项目发布路径
     proxyTable: {
       // 如果使用本地后台服务，请打开下列配置
-      '/data/': {
+      '/data1/': {
         changeOrigin: true,
-        target: 'http://127.0.0.1:8002/',
-        pathRewrite: { '^/data/': '' }
+        target: 'http://60.205.210.215:80/javasource-2.1.1.RELEASE/',
+        pathRewrite: { '^/data1/': '' }
       }
     }, // devServer反向代理列表
 
@@ -51,12 +51,12 @@ module.exports = {
   build: {
     mode: 'production',
     // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    index: path.resolve(__dirname, '../distfood/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '../distfood'),
     assetsSubDirectory: 'static', // 静态资源的路径
-    assetsPublicPath: '/element-seed/', // 项目的的发布路径，必须以'/'结尾,建议使用 '/CONTEXT_PATH'的模式
+    assetsPublicPath: '', // 项目的的发布路径，必须以'/'结尾,建议使用 '/CONTEXT_PATH'的模式
 
     /**
      * Source Maps

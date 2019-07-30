@@ -256,7 +256,7 @@
           tempRoot.routeName = this.newRoot.routeName
           tempRoot.isFlow = 1
           tempRoot.pid = 0
-          this.insert({url: 'data/menuFunction', params: [tempRoot]}).then(data => {
+          this.insert({url: 'data1/menuFunction', params: [tempRoot]}).then(data => {
             if (data.code === 0) {
               let arr = data.data
               this.data.push(arr[0])
@@ -290,7 +290,7 @@
           tempsub.routeName = this.newsubnode.routeName
           tempsub.isFlow = 1
           tempsub.pid = this.currentParentNode.id
-          this.insert({url: 'data/menuFunction', params: [tempsub]}).then(data => {
+          this.insert({url: 'data1/menuFunction', params: [tempsub]}).then(data => {
             if (data.code === 0) {
               let arr = data.data
               if (this.currentParentNode.children) {
@@ -310,7 +310,7 @@
     }
 
     refreshTree () {
-      this.select('data/menuFunction/list', {}, true).then(data => {
+      this.select('data1/menuFunction/list', {}, true).then(data => {
         this.data = this.getTree(data, 'children', 'pid')
       })
     }
@@ -347,7 +347,7 @@
         }
         delete this.currentParentNode.children
       }
-      this.update({url: 'data/menuFunction', params: [this.currentParentNode]}).then(data => {
+      this.update({url: 'data1/menuFunction', params: [this.currentParentNode]}).then(data => {
         if (data.code === 0) {
           this.currentParentNode = {}
           this.refreshTree()
@@ -373,7 +373,7 @@
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.remove(`data/menuFunction/${this.currentParentNode.id}`).then(data => {
+        this.remove(`data1/menuFunction/${this.currentParentNode.id}`).then(data => {
           this.refreshTree()
           this.$message({
             type: 'info',
