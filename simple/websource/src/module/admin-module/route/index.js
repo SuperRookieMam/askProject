@@ -37,13 +37,33 @@ export default [{
       props: true
     }, {
       name: 'food',
-      path: '/food',
+      path: '/food/:currentHtml/:id/:rmsg',
       component: () => import('../../admin-module/component/food/food'),
       props: true
     }, {
     name: 'foods',
-      path: '/foods',
+      path: '/foods/:currentHtml/:jumpName/:rmsg',
       component: () => import('../../admin-module/component/food/foods'),
+      props: true
+    }, {
+      name: 'exam',
+      path: '/exam/:currentHtml/:id/:rmsg',
+      component: () => import('../../admin-module/component/Exams/Exam'),
+      props: true
+    }, {
+      name: 'exams',
+      path: '/exams/:currentHtml/:jumpName/:rmsg',
+      component: () => import('../../admin-module/component/Exams/Exams'),
+      props: true
+    }, {
+      name: 'result',
+      path: '/result/:currentHtml/:id/:rmsg',
+      component: () => import('../../admin-module/component/Result/Result'),
+      props: true
+    }, {
+      name: 'results',
+      path: '/results/:currentHtml/:jumpName/:rmsg',
+      component: () => import('../../admin-module/component/Result/Results'),
       props: true
     }
       ]

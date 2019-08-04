@@ -46,4 +46,8 @@ public class Exam extends BaseEntity {
     @JoinColumn(name = "exam_id_")
     private List<Result> results;
 
+    @Column(name = "exams_")
+    @Description(label = "答案类型")
+    private Long exams;
+
 }

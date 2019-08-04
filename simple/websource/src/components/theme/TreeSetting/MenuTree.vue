@@ -30,11 +30,6 @@
                             <el-input-number v-model="newRoot.sort" controls-position="right"/>
                           </el-col>
                         </el-form-item>
-                        <el-form-item label="链接地址" prop="url">
-                          <el-col :span="18">
-                            <el-input v-model="newRoot.url"/>
-                          </el-col>
-                        </el-form-item>
                         <el-form-item label="路由开关" prop="isMenu">
                           <el-col :span="18">
                             <el-switch
@@ -43,9 +38,19 @@
                               inactive-color="#ff4949"/>
                           </el-col>
                         </el-form-item>
-                        <el-form-item label="路由名称" prop="routeName" v-if="newRoot.isMenu === true">
+                        <el-form-item label="路由" prop="tableRoute" v-if="newRoot.isMenu === true">
                           <el-col :span="18">
-                            <el-input v-model="newRoot.routeName"/>
+                            <el-input v-model="newRoot.tableRoute"/>
+                          </el-col>
+                        </el-form-item>
+                        <el-form-item label="表单路由" prop="formRoute" v-if="newRoot.isMenu === true">
+                          <el-col :span="18">
+                            <el-input v-model="newRoot.formRoute"/>
+                          </el-col>
+                        </el-form-item>
+                        <el-form-item label="类型" prop="type" v-if="newRoot.isMenu === true">
+                          <el-col :span="18">
+                            <el-input v-model="newRoot.type"/>
                           </el-col>
                         </el-form-item>
                         <el-form-item label="是否显示" prop="isShow">
@@ -104,17 +109,32 @@
                   </el-form-item>
                 </el-col>
               </el-row>
+              <el-form-item label="路由开关" prop="isMenu">
+                <el-col :span="12">
+                  <el-switch
+                    v-model="currentParentNode.isMenu"
+                    active-color="#13ce66"
+                    inactive-color="#ff4949"/>
+                </el-col>
+              </el-form-item>
               <el-row>
                 <el-col :span="12">
-                  <el-form-item label="路由名称">
-                    <el-input v-model="currentParentNode.routeName"/>
+                  <el-form-item label="路由">
+                    <el-input v-model="currentParentNode.tableRoute" v-if="currentParentNode.isMenu"/>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
                 <el-col :span="12">
-                  <el-form-item label="链接地址">
-                    <el-input v-model="currentParentNode.url"/>
+                  <el-form-item label="表单路由">
+                    <el-input v-model="currentParentNode.formRoute" v-if="currentParentNode.isMenu"/>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="路由类型">
+                    <el-input v-model="currentParentNode.type" v-if="currentParentNode.isMenu"/>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -153,20 +173,6 @@
               </el-row>
               <el-row>
                 <el-col :span="12">
-                  <el-form-item label="排序权重" prop="sort">
-                    <el-input type="number" v-model="newsubnode.sort"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12">
-                  <el-form-item label="链接地址" prop="url">
-                    <el-input v-model="newsubnode.url"/>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12">
                   <el-form-item label="路由开关" prop="isMenu">
                     <el-switch
                       v-model="newsubnode.isMenu"
@@ -177,8 +183,29 @@
               </el-row>
               <el-row>
                 <el-col :span="12">
-                  <el-form-item label="路由名称" prop="routeName" v-if="newsubnode.isMenu === true">
-                    <el-input v-model="newsubnode.routeName"/>
+                  <el-form-item label="路由名称" prop="tableRoute" v-if="newsubnode.isMenu">
+                    <el-input v-model="newsubnode.tableRoute"/>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="表单路由" prop="formRoute" v-if="newsubnode.isMenu">
+                    <el-input v-model="newsubnode.formRoute"/>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="路由类型" prop="type" v-if="newsubnode.isMenu">
+                    <el-input v-model="newsubnode.type"/>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item label="排序权重" prop="sort">
+                    <el-input type="number" v-model="newsubnode.sort"/>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -250,13 +277,13 @@
           tempRoot.cname = this.newRoot.cname
           tempRoot.ename = this.newRoot.ename
           tempRoot.sort = this.newRoot.sort
-          tempRoot.url = this.newRoot.url ? this.newRoot.url : ''
+          tempRoot.formRoute = this.newRoot.formRoute ? this.newRoot.formRoute : ''
           tempRoot.isMenu = this.newRoot.isMenu ? 1 : 0
           tempRoot.isShow = this.newRoot.isShow ? 1 : 0
-          tempRoot.routeName = this.newRoot.routeName
-          tempRoot.isFlow = 1
+          tempRoot.tableRoute = this.newRoot.tableRoute
+          tempRoot.type = this.newRoot.type
           tempRoot.pid = 0
-          this.insert({url: 'data1/menuFunction', params: [tempRoot]}).then(data => {
+          this.insert({url: this.geturl(this.serverUrl.ask.menutreeUpdate), params: [tempRoot]}).then(data => {
             if (data.code === 0) {
               let arr = data.data
               this.data.push(arr[0])
@@ -284,13 +311,13 @@
           tempsub.cname = this.newsubnode.cname
           tempsub.ename = this.newsubnode.ename
           tempsub.sort = this.newsubnode.sort
-          tempsub.url = this.newsubnode.url ? this.newsubnode.url : ''
+          tempsub.formRoute = this.newsubnode.formRoute
           tempsub.isMenu = this.newsubnode.isMenu ? 1 : 0
           tempsub.isShow = this.newsubnode.isShow ? 1 : 0
-          tempsub.routeName = this.newsubnode.routeName
-          tempsub.isFlow = 1
+          tempsub.tableRoute = this.newsubnode.tableRoute
+          tempsub.type = this.newsubnode.type
           tempsub.pid = this.currentParentNode.id
-          this.insert({url: 'data1/menuFunction', params: [tempsub]}).then(data => {
+          this.insert({url: this.geturl(this.serverUrl.ask.menutreeUpdate), params: [tempsub]}).then(data => {
             if (data.code === 0) {
               let arr = data.data
               if (this.currentParentNode.children) {
@@ -310,7 +337,7 @@
     }
 
     refreshTree () {
-      this.select('data1/menuFunction/list', {}, true).then(data => {
+      this.select(this.geturl(this.serverUrl.ask.menutreeList), {}, true).then(data => {
         this.data = this.getTree(data, 'children', 'pid')
       })
     }
@@ -332,7 +359,7 @@
 
     updateNode () {
       if (!this.currentParentNode.id ||
-        (!this.currentParentNode.pid && this.currentParentNode.pid !== 0) ||
+         (!this.currentParentNode.pid && this.currentParentNode.pid !== 0) ||
           !this.currentParentNode.cname) {
         this.message('请完整选中状态的节点信息', '友情提示')
         return
@@ -347,7 +374,7 @@
         }
         delete this.currentParentNode.children
       }
-      this.update({url: 'data1/menuFunction', params: [this.currentParentNode]}).then(data => {
+      this.update({url: this.geturl(this.serverUrl.ask.menutreeUpdate), params: [this.currentParentNode]}).then(data => {
         if (data.code === 0) {
           this.currentParentNode = {}
           this.refreshTree()
@@ -359,7 +386,7 @@
 
     deleteNode () {
       if (!this.currentParentNode.id ||
-          !this.currentParentNode.pid ||
+         (!this.currentParentNode.pid && this.currentParentNode.pid !== 0) ||
           !this.currentParentNode.cname) {
         this.message('请完整选中状态的节点信息', '友情提示')
         return
@@ -373,7 +400,7 @@
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.remove(`data1/menuFunction/${this.currentParentNode.id}`).then(data => {
+        this.remove(this.geturl(`${this.serverUrl.ask.menutreeUpdate}/${this.currentParentNode.id}`)).then(data => {
           this.refreshTree()
           this.$message({
             type: 'info',

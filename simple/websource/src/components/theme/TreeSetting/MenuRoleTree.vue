@@ -83,7 +83,7 @@
                   :key="index"
                   :label="item.id"
                   border>
-                  {{ item.rolName }}
+                  {{ item.roleName }}
                 </el-radio>
               </el-radio-group>
             </div>
@@ -111,12 +111,12 @@
     allnodeSelcted = []
     menuRoleSelect = []
     refreshTree () {
-      this.select('data1/menuFunction/list', {}, true).then(data => {
+      this.select(this.geturl(this.serverUrl.ask.menutreeList), {}, true).then(data => {
         this.menuTree = this.getTree(data, 'children', 'pid')
       })
     }
     roleList () {
-      this.select('data1/roleInfo/list', {}, true).then(data => {
+      this.select(this.geturl(this.serverUrl.ask.roleList), {}, true).then(data => {
         this.redios = data
       })
     }
@@ -163,7 +163,7 @@
             value: this.rediosSelect
           }]
         }
-        this.select('data1/menuFunctionRole/list', params, true).then(data => {
+        this.select(this.geturl(this.serverUrl.ask.menuRoleList), params, true).then(data => {
             let param = {
               basicsParams: [{
                 key: 'id',
@@ -171,7 +171,7 @@
                 value: data.map(ele => ele.menuFunctionId)
               }]
             }
-            this.select('data1/menuFunction/list', param, true).then(data1 => {
+            this.select(this.geturl(this.serverUrl.ask.menutreeList), param, true).then(data1 => {
                  this.menuRoleTree = this.getTree(data1, 'children', 'pid')
             })
         })
@@ -197,7 +197,7 @@
         tempnodes.push(meunuRole)
       })
       if (tempnodes.length > 0) {
-        this.insert({url: 'data1/menuFunctionRole', params: tempnodes}).then(data => {
+        this.insert({url: this.geturl(this.serverUrl.ask.menuRoleUpdate), params: tempnodes}).then(data => {
               this.getRoleMenu()
         })
       }
@@ -222,7 +222,7 @@
           value: this.menuRoleSelect.map(ele => ele.id)
         }]
       }
-      this.remove('data1/menuFunctionRole/params', params, true).then(data => {
+      this.remove(this.geturl(this.serverUrl.ask.menuRoleUpdateParams), params, true).then(data => {
         this.menuRoleSelect = []
         this.getRoleMenu()
       })

@@ -6,8 +6,13 @@
              label-width="80px">
       <el-row>
         <el-col :span="6">
-          <el-form-item label="菜品名">
-            <el-input v-model="serchObj['foodName']" placeholder="请输入"/>
+          <el-form-item label="题目类型">
+            <el-input v-model="serchObj['subjectName']" placeholder="请输入"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="results">
+            <el-input v-model="serchObj['results']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
         <el-col :span="4">
@@ -31,20 +36,14 @@
         label="id"
         prop="id"/>
       <el-table-column
-        label="菜品名"
-        prop="foodName"/>
+        label="题目类型"
+        prop="subjectName"/>
       <el-table-column
-        label="描述"
+        label="题目描述"
         prop="description"/>
       <el-table-column
-        label="图片url"
-        prop="imgUrl"/>
-      <el-table-column
-        label="烹饪过程url"
-        prop="processUrls"/>
-      <el-table-column
-        label="exams"
-        prop="exams"/>
+        label="答案类型"
+        prop="choose"/>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -67,7 +66,7 @@
   import TableBase from '../../../../plugins/TableBase'
 
   @Component
-  export default class Foods extends Mixins(TableBase) {
+  export default class Exams extends Mixins(TableBase) {
     @Prop({default: () => 'table'})
     currentHtml
     @Prop({default: () => ''})
@@ -84,7 +83,7 @@
     }
 
     getPageUrl () {
-      return this.geturl(this.serverUrl.ask.foodPage)
+      return this.geturl(this.serverUrl.ask.examPage)
     }
   }
 </script>

@@ -25,12 +25,7 @@ export default {
   getters: {
     loginType: state => { return state.loginType }
   },
-  mutations: {
-    currentUser: (state, user) => (state.user = user),
-    updateUser: (state, user) => {
-      state.user = user
-    }
-  },
+  mutations: {},
   actions: {
     login ({commit, state: { url, loginType, oauth }}, data) {
       if (loginType === 'oauth') {
@@ -43,7 +38,6 @@ export default {
         }
         return loginInstance.post(url.oautLogin, params).then(({ data }) => {
            commit('updateToken', data, {root: true})
-           commit('loginType', loginType, {root: true})
            sessionStorage.setItem('token', JSON.stringify(data))
            return loginInstance.get(`${url.userInfo}?access_token=${data.access_token}`).then(({data}) => {
              commit('updateUser', data.data, {root: true})

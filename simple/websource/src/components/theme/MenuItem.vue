@@ -1,9 +1,11 @@
 <template>
-  <el-submenu
-    v-if="item.submenus && item.submenus.length>0"
-    popper-class="my-submenu"
-    :index="item.id+''">
-    <template slot="title"> {{ item.cname }}</template>
+  <el-submenu v-if="item.submenus && item.submenus.length>0"
+              popper-class="my-submenu"
+              :index="item.id+''">
+    <template slot="title">
+      <i class="el-icon-menu"/>
+      <span slot="title">{{ item.cname }}</span>
+    </template>
     <menu-item v-for="(submenu,index) in item.submenus"
                :item="submenu"
                :key="index"/>
@@ -11,7 +13,8 @@
   <el-menu-item v-else
                 @click="toTarget(item)"
                 :index="item.id+''">
-    <template>{{ item.cname }}</template>
+    <i class="el-icon-menu"/>
+    <span slot="title">{{ item.cname }}</span>
   </el-menu-item>
 </template>
 
@@ -26,14 +29,14 @@
     @Prop({default: () => {}})
     item
 
-    toTarget ({isMenu, routeName}) {
-      if (isMenu === 1) {
-        this.$router.push({name: routeName})
+    toTarget (item) {
+      if (item.isMenu === 1) {
+        if (item.type === 'table') {
+          this.$router.push({path: `/${item.tableRoute}/${item.type}/${item.formRoute}/none_none_0`})
+        } else {
+          this.$router.push({path: `/${item.tableRoute}`})
+        }
       }
     }
   }
 </script>
-
-<style scoped>
-
-</style>

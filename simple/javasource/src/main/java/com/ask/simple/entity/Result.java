@@ -37,4 +37,7 @@ public class Result extends BaseEntity {
     @Description(label = "是否正确")
     private boolean right;
 
+    @Column(name = "results_")
+    private Long  results;
+
 }

@@ -3,35 +3,60 @@ import Vuex, { Store } from 'vuex'
 import { httpInstance } from '../config'
 import Login from './login'
 import FormState from './FormState'
-
+import ServerMap from './ServerMap'
 Vue.use(Vuex) // use必须在创建store实例之前调用
 const CTX = CONTEXT_PATH + 'data1/'
 export default new Store({
   namespaced: true,
   state: {
-    title: '应用',
+    serverName: '',
     user: {},
     token: {},
-    refresh_token: '',
     error: {
       count: 0,
       message: ''
     },
     loadingCount: 0,
-    loginType: '',
-    theme: 'left',
     menus: [],
     url: {
-      authorityMenus: CTX + 'menuFunctionRole/menus',
       login: CTX + 'login',
       logout: CTX + 'logout'
-    }
+    },
+    serverMap: {
+      oauthserver: CONTEXT_PATH + 'data1/',
+      ask: CONTEXT_PATH + 'data1/'
+    },
+    currentServer: {}
   },
   getters: {
-    menus: state => { return state.menus },
-    loginType: state => { return state.loginType },
+    menus: state => {
+      let parent = {}
+      let all = {}
+      state.menus.forEach(ele => {
+        if (parent.hasOwnProperty(ele.pid) && ele.pid !== 0) {
+          parent[ele.pid].push(ele)
+        } else if (ele.pid !== 0) {
+          parent[ele.pid] = [ele]
+        }
+        all[ele.id] = 1
+      })
+      let menus = []
+      state.menus.forEach(ele => {
+        ele.submenus = parent[ele.id]
+        if (ele.pid === 0) {
+          menus.push(ele)
+        } else {
+          if (!all.hasOwnProperty(ele.pid)) {
+            menus.push(ele)
+          }
+        }
+      })
+      return menus
+    },
     token: state => { return state.token },
-    user: state => { return state.user }
+    user: state => { return state.user },
+    currentServer: state => { return state.currentServer },
+    serverMap: state => { return state.serverMap }
   },
   mutations: {
     updateTitle (state, { title }) {
@@ -67,41 +92,20 @@ export default new Store({
     updateToken (state, data) {
       state.token = data
     },
-    loginType: (state, loginType) => {
-      state.loginType = loginType
+    currentServer: (state, server) => {
+      state.currentServer = server
     }
   },
   actions: {
-    loadMenu ({commit, state: { url }}) {
-      return httpInstance.get(url.authorityMenus).then(({ data }) => {
-              let parent = {}
-              let all = {}
-              data.forEach(ele => {
-                if (parent.hasOwnProperty(ele.pid) && ele.pid !== 0) {
-                  parent[ele.pid].push(ele)
-                } else if (ele.pid !== 0) {
-                  parent[ele.pid] = [ele]
-                }
-                all[ele.id] = 1
-              })
-              let menus = []
-              data.forEach(ele => {
-                ele.submenus = parent[ele.id]
-                if (ele.pid === 0) {
-                    menus.push(ele)
-                } else {
-                   if (!all.hasOwnProperty(ele.pid)) {
-                     menus.push(ele)
-                   }
-                }
-              })
-              commit('updateMenu', menus)
-              return menus
-           })
+    loadMenu ({commit, state: {serverMap}}, {url}) {
+      return httpInstance.get(`${url}`).then(({ data }) => {
+        commit('updateMenu', data)
+      })
     }
   },
   modules: {
     Login: Login,
-    Formstate: new FormState()
+    Formstate: new FormState(),
+    ServerMap: new ServerMap()
   }
 })

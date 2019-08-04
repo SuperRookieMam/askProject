@@ -37,4 +37,8 @@ public class BaseEntity implements Serializable {
     @LastModifiedBy
     @Column(name = "create_user" ,updatable = false)
     private String modifyUser;
+
+
+    @Column(name = "table_name_")
+    private String tableName;
 }

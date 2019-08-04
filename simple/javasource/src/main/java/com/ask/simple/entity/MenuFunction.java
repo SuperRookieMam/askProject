@@ -13,7 +13,7 @@ import javax.persistence.*;
 @IsCreate
 @Table(name = "menu_function_",
               uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"route_name_", "url_","resource_id_"})})
+        @UniqueConstraint(columnNames = {"form_route_", "table_route_"})})
 public class MenuFunction extends BaseEntity {
     private static final long serialVersionUID = -7318256292767023491L;
 
@@ -28,17 +28,14 @@ public class MenuFunction extends BaseEntity {
     @Column(name = "ename_")
     private String ename;
 
-    @Column(name = "url_")
-    private String url;
+    @Column(name = "form_route_")
+    private String formRoute;
 
-    @Column(name = "sort_")
-    private Integer sort;
-
-    @Column(name = "route_name_")
-    private String routeName;
+    @Column(name = "table_route_")
+    private String tableRoute;
 
     @Column(name = "pid_")
-    private Integer pid;
+    private Long pid;
 
     @Column(name = "is_menu_")
     private Integer isMenu;
@@ -46,10 +43,9 @@ public class MenuFunction extends BaseEntity {
     @Column(name = "is_show_")
     private Integer isShow;
 
-    @Column(name = "is_flow_")
-    private Integer isFlow;
+    @Column(name = "type_")
+    private String type;
 
-    @Column(name = "resource_id_")
-    private String resourceId ;
-
+    @Column(name = "sort_")
+    private Integer sort;
 }

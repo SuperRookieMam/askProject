@@ -22,39 +22,25 @@
         <el-tab-pane label="基础信息" name="base">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="菜品名" prop="foodName">
-                <el-input v-model="formData.foodName"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="描述" prop="description">
+              <el-form-item label="答案" prop="description">
                 <el-input v-model="formData.description"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="图片url" prop="imgUrl">
-                <el-input v-model="formData.imgUrl"/>
+              <el-form-item label="分值" prop="score">
+                <el-input v-model="formData.score"/>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="烹饪过程url" prop="processUrls">
-                <el-input v-model="formData.processUrls"/>
+              <el-form-item label="是否正确" prop="right">
+                <el-input v-model="formData.right"/>
               </el-form-item>
             </el-col>
           </el-row>
-        </el-tab-pane>
-        <el-tab-pane label="题目设置" name="exams" v-if="id!=='new'">
-          <exams
-            current-html="rtable"
-            jump-name="exam"
-            :rmsg="'Food_exams_'+formData.id"
-            v-if="activeName === 'exams'"/>
         </el-tab-pane>
       </el-tabs>
     </el-form>
@@ -63,14 +49,9 @@
 <script>
   import {Component, Prop, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
-  import Exams from '../Exams/Exams'
 
-  @Component({
-    components: {
-      Exams
-    }
-  })
-  export default class Food extends Mixins(TableBase) {
+  @Component
+  export default class Result extends Mixins(TableBase) {
     @Prop({default: () => 'new'})
     id
     @Prop({default: () => ''})
@@ -79,7 +60,7 @@
     currentHtml
 
     getFromUrl () {
-      return this.geturl(this.serverUrl.ask.foodUpdate)
+      return this.geturl(this.serverUrl.ask.resultUpdate)
     }
 
     rules = {}
