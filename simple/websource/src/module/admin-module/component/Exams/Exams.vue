@@ -44,6 +44,9 @@
       <el-table-column
         label="答案类型"
         prop="choose"/>
+      <el-table-column
+        label="分值"
+        :formatter="scoreCover"/>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -81,7 +84,15 @@
         }
       }
     }
-
+    scoreCover (row) {
+      var totalScore = 0
+      for (var i in row.results) {
+        if (row.results[i].right === true) {
+          totalScore = totalScore + row.results[i].score
+        }
+      }
+      return totalScore
+    }
     getPageUrl () {
       return this.geturl(this.serverUrl.ask.examPage)
     }

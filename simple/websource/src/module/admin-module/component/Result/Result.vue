@@ -37,7 +37,13 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否正确" prop="right">
-                <el-input v-model="formData.right"/>
+                <el-select v-model="formData.right" placeholder="请选择" @change="changeValue">
+                  <el-option
+                    v-for="item in optionsRight"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"/>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -58,11 +64,23 @@
     rmsg
     @Prop({default: () => ''})
     currentHtml
-
+    optionsRight=[{
+      value: 'true',
+      label: '正确'
+    }, {
+      value: 'false',
+      label: '错误'
+    }]
     getFromUrl () {
       return this.geturl(this.serverUrl.ask.resultUpdate)
     }
-
+    changeValue (val) {
+    if (val === 'true') {
+      return '正确'
+    } else {
+      return '错误'
+    }
+    }
     rules = {}
   }
 </script>

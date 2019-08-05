@@ -44,7 +44,8 @@
         prop="score"/>
       <el-table-column
         label="是否正确"
-        prop="right"/>
+        prop="right"
+        :formatter="statusFormatter"/>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -81,6 +82,13 @@
           basicsParams.push({key: key, type: 'eq', value: this.serchObj[key]})
         }
       }
+    }
+    statusFormatter (row) {
+     if (row.right === true) {
+       return '正确'
+     } else {
+       return '错误'
+     }
     }
 
     getPageUrl () {

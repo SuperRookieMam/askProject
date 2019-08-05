@@ -97,14 +97,13 @@
    }
    // 删除一行
    deleteRow (params) {
-     let url = this.pageUrl.substring(0, this.pageUrl.lastIndexOf('/'))
-     url = this.geturl(url)
+     let pageurl = this.getPageUrl()
+     let url = pageurl.substring(0, pageurl.lastIndexOf('/'))
      this.Del({url: `${url}/${params.id}`}).then(data => {
        this.filterByserchObj()
      })
    }
 
-   // 充值表单
    resetForm (formName) {
      this.$router.go(-1)
    }

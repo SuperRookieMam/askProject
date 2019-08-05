@@ -61,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         List<String> templist =  new ArrayList<>();
         templist.add("/login/**");
         templist.add("/logout/**");
-        templist.add("/fileInfo/preview/**");
+        templist.add("/fileInfos/preview/**");
         permitAll =  templist.toArray(new String[0]);
         permitPath = new String[templist.size()];
         for (int i = 0; i <templist.size() ; i++) {

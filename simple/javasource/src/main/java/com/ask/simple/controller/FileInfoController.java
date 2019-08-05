@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("fileInfo")
+@RequestMapping("fileInfos")
 public class FileInfoController extends FileInfoAbstactController<FileInfo,String> {
 
 }

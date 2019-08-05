@@ -18,11 +18,11 @@ export default [{
       props: true
     }, {
       name: 'menuFunctions',
-      path: '/menuFunctions',
+      path: '/menuFunctions/:currentHtml/:jumpName/:rmsg',
       component: () => import('../../admin-module/component/MenuFunction/MenuFunctions')
     }, {
       name: 'menuFunction',
-      path: '/menuFunction/:id',
+      path: '/menuFunction/:currentHtml/:id/:rmsg',
       component: () => import('../../admin-module/component/MenuFunction/MenuFunction'),
       props: true
     }, {
@@ -65,8 +65,19 @@ export default [{
       path: '/results/:currentHtml/:jumpName/:rmsg',
       component: () => import('../../admin-module/component/Result/Results'),
       props: true
-    }
-      ]
+    },
+      {
+        name: 'oAthUserDetailes',
+        path: '/oAthUserDetailes/:currentHtml/:id/:rmsg',
+        component: () => import('../../admin-module/component/OAthUserDetailes/OAthUserDetailes'),
+        props: true
+      }, {
+        name: 'oAthUserDetailess',
+        path: '/oAthUserDetailes/:currentHtml/:jumpName/:rmsg',
+        component: () => import('../../admin-module/component/OAthUserDetailes/OAthUserDetailess'),
+        props: true
+      }
+    ]
    }
 
 ]
