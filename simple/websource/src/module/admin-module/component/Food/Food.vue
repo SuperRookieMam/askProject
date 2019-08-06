@@ -180,28 +180,28 @@
       }
       return isJPG && isLt2M
     }
-  // getFormData () {
-  //   if (this.id === 'new') {
-  //     return
-  //   }
-  //   return this.select(this.getFromUrl()).then(data => {
-  //     alert(1)
-  //     console.log(data)
-  //     this.formData = data
-  //     if (this.formData.imgUrl) {
-  //       this.fileList = [{
-  //         url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.imgUrl}`,
-  //         name: this.formData.imgUrl
-  //       }]
-  //     }
-  //     if (this.formData.processUrls) {
-  //       this.fileList = [{
-  //         url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.processUrls}`,
-  //         name: this.formData.processUrls
-  //       }]
-  //     }
-  //     return data
-  //   })
-  // }
+  getFormData () {
+    if (this.id === 'new') {
+      return
+    }
+    return this.select(`${this.getFromUrl()}/${this.id}`).then(data => {
+      alert(1)
+      console.log(data)
+      this.formData = data
+      if (this.formData.imgUrl) {
+        this.fileList = [{
+          url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.imgUrl}`,
+          name: this.formData.imgUrl
+        }]
+      }
+      if (this.formData.processUrls) {
+        this.fileList2 = [{
+          url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.processUrls}`,
+          name: this.formData.processUrls
+        }]
+      }
+      return data
+    })
+  }
   }
 </script>
