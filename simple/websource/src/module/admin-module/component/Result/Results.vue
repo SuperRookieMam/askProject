@@ -6,8 +6,8 @@
              label-width="80px">
       <el-row>
         <el-col :span="6">
-          <el-form-item label="分值">
-            <el-input v-model="serchObj['score']" placeholder="请输入"/>
+          <el-form-item label="所属题目">
+            <el-input v-model="serchObj['exam.subjectName']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -15,7 +15,7 @@
             <el-input v-model="serchObj['right']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3" style="float: right">
           <el-button type="primary"
                      size="mini"
                      @click="filterByserchObj">
@@ -33,19 +33,15 @@
       :data="tableData"
       v-loading="loading"
       style="width: 100%">
-      <el-table-column
-        label="id"
-        prop="id"/>
-      <el-table-column
-        label="答案"
-        prop="description"/>
-      <el-table-column
-        label="分值"
-        prop="score"/>
-      <el-table-column
-        label="是否正确"
-        prop="right"
-        :formatter="statusFormatter"/>
+      <el-table-column label="id" prop="id"/>
+      <el-table-column label="答案" prop="description"/>
+      <el-table-column label="分值" prop="score"/>
+      <el-table-column label="是否正确" prop="right" :formatter="statusFormatter"/>
+      <el-table-column label="所属题目" prop="exam">
+        <template slot-scope="scope">
+          <span> {{ scope.row.exam ? scope.row.exam.subjectName : '' }} </span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -64,25 +60,13 @@
   </div>
 </template>
 <script>
-  import {Component, Mixins, Prop} from 'vue-property-decorator'
+  import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
 
   @Component
   export default class Results extends Mixins(TableBase) {
-    @Prop({default: () => 'table'})
-    currentHtml
-    @Prop({default: () => ''})
-    jumpName
-    @Prop({default: () => ''})
-    rmsg
+    currentHtml = 'results'
 
-    howSearch (basicsParams) {
-      for (var key in this.serchObj) {
-        if (this.serchObj[key] !== '') {
-          basicsParams.push({key: key, type: 'eq', value: this.serchObj[key]})
-        }
-      }
-    }
     statusFormatter (row) {
      if (row.right === true) {
        return '正确'
@@ -90,7 +74,15 @@
        return '错误'
      }
     }
-
+    setRequestParam (params) {
+      let basicsParams = []
+      for (var key in this.serchObj) {
+        if (this.serchObj[key] !== '') {
+          basicsParams.push({key: key, type: 'like', value: this.serchObj[key]})
+        }
+      }
+      this.params.basicsParams = basicsParams
+    }
     getPageUrl () {
       return this.geturl(this.serverUrl.ask.resultPage)
     }

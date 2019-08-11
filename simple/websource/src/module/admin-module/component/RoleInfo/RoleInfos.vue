@@ -6,21 +6,16 @@
              label-width="80px">
       <el-row>
         <el-col :span="6">
-          <el-form-item label="账号">
-            <el-input v-model="serchObj['username']" placeholder="请输入"/>
+          <el-form-item label="编号">
+            <el-input v-model="serchObj['id']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="昵称">
-            <el-input v-model="serchObj['nickname']" placeholder="请输入"/>
+          <el-form-item label="角色名称">
+            <el-input v-model="serchObj['roleName']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-form-item label="微信号">
-            <el-input v-model="serchObj['weChatId']" placeholder="请输入"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="3" style="float: right">
+        <el-col :span="3" style="float: right;">
           <el-button type="primary"
                      size="mini"
                      @click="filterByserchObj">
@@ -34,12 +29,13 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-table :data="tableData"
-              style="width: 100%">
-      <el-table-column label="id" prop="id"/>
-      <el-table-column label="账号" prop="username"/>
-      <el-table-column label="昵称" prop="nickname"/>
-      <el-table-column label="微信号" prop="weChatId"/>
+    <el-table
+      :data="tableData"
+      v-loading="loading"
+      style="width: 100%">
+      <el-table-column label="编号" prop="id"/>
+      <el-table-column label="角色名称" prop="roleName"/>
+      <el-table-column label="父ID" prop="pid"/>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -55,19 +51,38 @@
       :page-size="params.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalCount"/>
+    <el-dialog
+      title="新增类型"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <role-info v-if="dialogVisible"/>
+    </el-dialog>
   </div>
 </template>
 <script>
   import { Component, Mixins } from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
+  import RoleInfo from './RoleInfo'
+  @Component({
+    components: {
+      RoleInfo
+    }
+  })
+  export default class RoleInfos extends Mixins(TableBase) {
+    currentHtml = 'roleInfos'
 
-  @Component
-  export default class OAthUserDetailess extends Mixins(TableBase) {
-    currentHtml = 'oAthUserDetailess'
-    serchObj = {}
+    dialogVisible = false
+
+    replaceEdit (data) {
+      this.setParames('roleInfo',
+        {id: data.id,
+          type: 'form',
+          parent: this})
+      this.dialogVisible = true
+    }
 
     getPageUrl () {
-      return this.geturl(this.serverUrl.ask.oauthUserDetailsPage)
+      return this.geturl(this.serverUrl.shopping.roleInfoPage)
     }
   }
 </script>

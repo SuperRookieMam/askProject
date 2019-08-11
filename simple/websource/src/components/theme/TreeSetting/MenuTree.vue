@@ -374,6 +374,7 @@
         }
         delete this.currentParentNode.children
       }
+      this.currentParentNode.isMenu = this.currentParentNode.isMenu === true || this.currentParentNode.isMenu === 1 ? 1 : 0
       this.update({url: this.geturl(this.serverUrl.ask.menutreeUpdate), params: [this.currentParentNode]}).then(data => {
         if (data.code === 0) {
           this.currentParentNode = {}

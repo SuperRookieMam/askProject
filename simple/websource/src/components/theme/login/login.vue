@@ -32,7 +32,9 @@
   import { namespace } from 'vuex-class'
 
   const loginModel = namespace('Login')
-  @Component
+  @Component({
+    inject: ['setParames']
+  })
   export default class Login extends Vue {
     loginRule = [{required: true, message: '请输入'}]
 
@@ -48,6 +50,7 @@
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.login(this.user).then(ele => {
+            this.setParames('/', {type: 'other'})
             this.$router.push({path: '/'})
           })
         } else {

@@ -1,17 +1,26 @@
 <template>
-  <router-view/>
+  <router-view v-if="isRouterAlive"/>
 </template>
 
 <script>
   import Vue from 'vue'
   import { Component } from 'vue-property-decorator'
   import { Mutation, State, Action } from 'vuex-class'
+  import publicMethods from './plugins/publicMethods'
 
   @Component({
-    components: {
-      // 注册两个主题组件
-      leftThemeTemplate: () => import('./components/theme/left-main/Leftmain'),
-      topThemeTemplate: () => import('./components/theme/top-main/Index')
+    components: {},
+    provide () {
+      return {
+        reload: this.reload,
+        setParames: publicMethods.setParames,
+        getParames: publicMethods.getParames,
+        beforeGetData: publicMethods.beforeGetData,
+        afterGetData: publicMethods.afterGetData,
+        beforeSubmit: publicMethods.beforeSubmit,
+        submitSucess: publicMethods.submitSucess,
+        interruptJump: publicMethods.interruptJump
+      }
     }
   })
   export default class App extends Vue {
@@ -24,6 +33,17 @@
     @Action('loadMenu')
     loadMenu
 
+    isRouterAlive = true
+    /**
+     * 重新加载页面
+     * */
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
+    }
+
     created () {
       this.loadMenu()
     }
@@ -35,4 +55,8 @@
 </script>
 <style lang="less">
   @import "./style/themes/default.less";
+  #app {
+    background-color: rgba(255, 255, 255, .9);
+    height: 100%;
+  }
 </style>

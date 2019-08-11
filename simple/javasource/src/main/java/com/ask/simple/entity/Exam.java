@@ -42,12 +42,12 @@ public class Exam extends BaseEntity {
     @Description(label = "答案类型")
     private String choose;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "exam_id_")
-    private List<Result> results;
+    @Column(name = "score_")
+    @Description(label = "分值")
+    private Integer score;
 
-    @Column(name = "food_id_")
-    @Description(label = "答案类型")
-    private Long exams;
-
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "food_")
+    @Description(label = "菜品")
+    private Food food;
 }

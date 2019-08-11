@@ -32,9 +32,11 @@ export default class ServerMap {
         userRoleUpdate: 'userRole',
         userRoleList: 'userRole/list',
         foodPage: 'food/page',
+        foodList: 'food/list',
         foodUpdate: 'food',
         examPage: 'exam/page',
         examUpdate: 'exam',
+        examList: 'exam/list',
         resultPage: 'result/page',
         resultUpdate: 'result'
       },

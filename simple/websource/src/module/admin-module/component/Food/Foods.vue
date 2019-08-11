@@ -10,7 +10,7 @@
             <el-input v-model="serchObj['foodName']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3" style="float: right">
           <el-button type="primary"
                      size="mini"
                      @click="filterByserchObj">
@@ -30,21 +30,12 @@
       <el-table-column
         label="id"
         prop="id"/>
-      <el-table-column
-        label="菜品名"
-        prop="foodName"/>
-      <el-table-column
-        label="描述"
-        prop="description"/>
-      <el-table-column
-        label="图片url"
-        prop="imgUrl"/>
-      <el-table-column
-        label="烹饪过程url"
-        prop="processUrls"/>
-      <el-table-column
-        label="exams"
-        prop="exams"/>
+      <el-table-column label="菜品名" prop="foodName"/>
+      <el-table-column label="描述" prop="description">
+        <template slot-scope="scope">
+          {{ scope.row.description && scope.row.description.length > 10 ? (scope.row.description.substring(0,10) + '...') : scope.row.description }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -63,26 +54,22 @@
   </div>
 </template>
 <script>
-  import {Component, Mixins, Prop} from 'vue-property-decorator'
+  import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
 
   @Component
   export default class Foods extends Mixins(TableBase) {
-    @Prop({default: () => 'table'})
-    currentHtml
-    @Prop({default: () => ''})
-    jumpName
-    @Prop({default: () => ''})
-    rmsg
+    currentHtml = 'foods'
 
-    howSearch (basicsParams) {
+    setRequestParam (params) {
+      let basicsParams = []
       for (var key in this.serchObj) {
         if (this.serchObj[key] !== '') {
-          basicsParams.push({key: key, type: 'eq', value: this.serchObj[key]})
+          basicsParams.push({key: key, type: 'like', value: this.serchObj[key]})
         }
       }
+      this.params.basicsParams = basicsParams
     }
-
     getPageUrl () {
       return this.geturl(this.serverUrl.ask.foodPage)
     }

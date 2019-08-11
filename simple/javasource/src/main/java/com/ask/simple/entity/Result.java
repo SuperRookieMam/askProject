@@ -37,7 +37,8 @@ public class Result extends BaseEntity {
     @Description(label = "是否正确")
     private boolean right;
 
-    @Column(name = "exam_id_")
-    private Long  results;
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "exam_")
+    private Exam  exam;
 
 }

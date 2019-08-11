@@ -59,7 +59,10 @@
     }
   })
   export default class Leftmain extends Mixins(TableBase) {
+    currentHtml = 'leftmain'
+
     isCollapse = true
+
     @Getter('user')
     currentUser
 

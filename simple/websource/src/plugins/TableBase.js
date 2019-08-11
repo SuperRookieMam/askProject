@@ -1,274 +1,445 @@
- import Vue from 'vue'
- import { namespace } from 'vuex-class'
- import { Component } from 'vue-property-decorator'
+import Vue from 'vue'
+import {namespace} from 'vuex-class'
+import {Component} from 'vue-property-decorator'
 
- const mapModul = namespace('ServerMap')
- // const AdminModul = namespace('admin')
- const Formstate = namespace('Formstate')
+const mapModul = namespace('ServerMap')
+const Formstate = namespace('Formstate')
 
- @Component
- export default class TableBase extends Vue {
-   @Formstate.Action('get')
-   Get
-   @Formstate.Action('del')
-   Del
-   @Formstate.Action('post')
-   update
-   @Formstate.Action('put')
-   insert
-   @Formstate.Action('upfile')
-   upfile
-   @mapModul.Getter('url')
-   serverUrl
+@Component({
+  inject: ['reload', 'setParames', 'getParames', 'beforeGetData', 'afterGetData', 'beforeSubmit', 'submitSucess', 'interruptJump']
+})
+export default class TableBase extends Vue {
+  @Formstate.Action('get')
+  Get
+  @Formstate.Action('del')
+  Del
+  @Formstate.Action('post')
+  update
+  @Formstate.Action('put')
+  insert
+  @Formstate.Action('upfile')
+  upfile
+  @mapModul.Getter('url')
+  serverUrl
 
-   servername = 'ask'
+  servername = 'ask'
 
-   formName = 'formData'
+  formName = 'formData'
 
-   tabPosition = 'top'
+  tabPosition = 'top'
 
-   tableData = []
+  tableData = []
 
-   formData = {}
+  formData = {}
 
-   pageSizes = [10, 20, 50, 100]
+  pageSizes = [10, 20, 50, 100]
 
-   totalCount = 0
+  totalCount = 0
 
-   serchObj = {}
+  serchObj = {}
 
-   activeName = 'base'
+  activeName = 'base'
 
-   loading = false
+  loading = false
 
-   params = {
-     pageSize: 50,
-     pageNum: 1
-   }
-   // 获取表单数据,根据searchObj过滤
-   filterByserchObj () {
-     this.loading = true
-     let basicsParams = []
-     let url = this.getPageUrl()
-     if (this.currentHtml === 'rtable') {
-       let rarr = this.rmsg.split('_')
-       //  需要用到的表都会设定一个tableName的字段表示，那个实体引用的这个表
-       basicsParams.push({key: 'tableName', type: 'eq', value: rarr[0]})
-       //  维护一对多的的表字段属性名不知道这里需要传进来
-       basicsParams.push({key: rarr[1], type: 'eq', value: rarr[2]})
-     }
-     this.howSearch(basicsParams)
-     this.params.basicsParams = basicsParams
-     this.select(url, this.params, true).then(data => {
-       if (data.list) {
-         this.tableData = data.list
-         this.params.pageSize = data.pageSize
-         this.params.pageNum = data.pageNum
-         this.totalCount = data.total
-         this.loading = false
-       }
-     })
-   }
-   // 获取表单数据
-   getFormData () {
-     if (this.id === 'new') {
-       return
-     }
-     return this.select(`${this.getFromUrl()}/${this.id}`).then(data => {
-       this.formData = data
-       return data
-     })
-   }
-   // 新增表单
-   add () {
-     this.edit({id: 'new'})
-   }
+  params = {
+    pageSize: 50,
+    pageNum: 1
+  }
 
-   // 编辑
-   edit (data) {
-     // 因为表格 只能存在一对多的引用，多对一是实体与实体之间的跳转，
-     let currentHtml = 'form'
-     let rmsg = 'none_'
-     if (this.currentHtml === 'rtable') {
-       currentHtml = 'rform'
-       rmsg = this.rmsg
-     }
-     this.$router.push({path: `/${this.jumpName}/${currentHtml}/${data.id}/${rmsg}`})
-   }
-   // 删除一行
-   deleteRow (params) {
-     let pageurl = this.getPageUrl()
-     let url = pageurl.substring(0, pageurl.lastIndexOf('/'))
-     this.Del({url: `${url}/${params.id}`}).then(data => {
-       this.filterByserchObj()
-     })
-   }
+  filterByserchObj () {
+    this.loading = true
+    let params = this.getParames(this.currentHtml)
+    // 如果自定义设置参数方法的执行自定义参数设置方法
+    if (this.setRequestParam) {
+      this.beforeGetData(this.setRequestParam, this.params)
+    } else {
+      this.setSearchObjToParams(params)
+    }
+    this.select(this.getPageUrl(), this.params, true).then(data => {
+      if (this.sucessResult) {
+        this.afterGetData(this.sucessResult, data)
+        return
+      }
+      //  如果没有定义 自定数据设置方法则,执行默认
+      if (data.list) {
+        this.tableData = data.list
+        this.params.pageSize = data.pageSize
+        this.params.pageNum = data.pageNum
+        this.totalCount = data.total
+        this.loading = false
+      }
+    })
+    this.loading = false
+  }
+  /**
+   * 默认的参数设置
+   * */
+  setSearchObjToParams (params) {
+    let basicsParams = []
+    if (params && params.type === 'rtable') {
+      basicsParams.push({key: 'tableName', type: 'eq', value: params.tableName})
+      basicsParams.push({key: params.fileName, type: 'eq', value: params.rid})
+    }
+    for (var key in this.serchObj) {
+      if (this.serchObj[key] !== '') {
+        basicsParams.push({key: key, type: 'eq', value: this.serchObj[key]})
+      }
+    }
+    this.params.basicsParams = basicsParams
+  }
 
-   resetForm (formName) {
-     this.$router.go(-1)
-   }
-   submitForm (formName) {
-     this.$refs[formName].validate((valid) => {
-       if (valid) {
-         if (this.id === 'new') {
-           // 一对多的情况
-           if (this.currentHtml === 'rform') {
-             let arr = this.rmsg.split('_')
-             this.formData.tableName = arr[0]
-             this.formData[arr[1]] = arr[2]
-           }
-           this.insert({url: this.getFromUrl(), params: [this.formData]}).then(ele => {
-             if (ele.code === 0) {
-               // 多对一的情况
-               if (this.currentHtml.search('rmform') >= 0) {
-                 let arr = this.rmsg.split('_')
-                 let urlarr = arr[0].split('.')
-                 let rurl = this.serverUrl
-                 urlarr.forEach(ele => {
-                   rurl = rurl[ele]
-                 })
-                 rurl = this.geturl(rurl)
-                 this.select(`${rurl}/${arr[2]}`).then(data => {
-                   let rdata = data
-                   rdata[arr[1]] = ele.data[0]
-                   this.update({url: rurl, params: [rdata]}).then(ele => {
-                     if (ele.code === 0) {
-                       this.formData = ele.data[0]
-                       this.$forceUpdate()
-                       // this.$router.go(-1)
-                     } else {
-                       this.message(ele.msg, '友情提示')
-                     }
-                   })
-                 })
-                 return
-               }
-               this.formData = ele.data[0]
-               this.$router.go(-1)
-             } else {
-               this.message(ele.msg, '友情提示')
-             }
-           })
-         } else {
-           this.update({url: this.getFromUrl(), params: [this.formData]})
-             .then(ele => {
-               if (ele.code === 0) {
-                 this.formData = ele.data[0]
-                 if (this.currentHtml === 'rform') {
-                   this.$forceUpdate()
-                   return
-                 }
-                 this.$router.go(-1)
-               } else {
-                 this.message(ele.msg, '友情提示')
-               }
-             })
-         }
-       } else {
-         return false
-       }
-     })
-   }
+  /**
+   * 一对多表格数据获取
+   * params 是一个obj，跳转前的一个面设置的，
+   * 设置即将跳转的页面需要的参数，参数
+   * {
+   * type: 'table'(普通表格)| 'rtable'(一对多表格)| 'form'(普通表单)|'rform'(一对多表单) | rmform(多对表单)
+   * url: 'http://...' 对应的借口地址
+   * rUrl:'http://...' 一对多引用放的地址
+   * rid: '' 如果是一对多，在是一的id
+   * id: '' 是form 表单的 需要请求的id
+   * tableName: '' 一的一方entity名字
+   * fileName: '' 一对多引用字段名，如果是自己自己手动维护的字段名字
+   * routName: '' 即将跳转的路由名称
+   * }
+   * */
+  getFormData () {
+    this.loading = true
+    let params = this.getParames(this.currentHtml)
+    // 因为在getformdata 不需要参数，但是可能需要执行某些东西，所以还是调用下
+    if (this.setRequestParam) {
+      this.beforeGetData(this.setRequestParam)
+    }
+    // 获取表单
+    if (params.id === 'new') {
+      if (this.sucessResult) {
+        this.afterGetData(this.sucessResult, this.formData)
+        this.loading = false
+        return
+      }
+      this.loading = false
+      return
+    }
+    return this.select(`${this.getFromUrl()}/${params.id}`).then(data => {
+      if (this.sucessResult) {
+        this.afterGetData(this.sucessResult, data)
+        this.loading = false
+        return
+      }
+      this.formData = data
+      this.loading = false
+    })
+  }
+  // 新增表单
+  add () {
+    this.edit({id: 'new'})
+  }
 
-   message (msg, title) {
-     this.$alert(msg, title, {
-       confirmButtonText: '确定',
-       callback: action => {
-         this.$message({
-           type: 'info',
-           message: `action: ${ action }`
-         })
-       }
-     })
-   }
+  // 编辑
+  edit (data) {
+    if (this.replaceEdit) {
+      this.interruptJump(this.replaceEdit, data)
+      return
+    }
+    let nextParams
+    // 这里设置的nextParams 请按照上面参数设置
+    if (this.SetNextParams) {
+      nextParams = this.SetNextParams(data)
+    } else {
+      nextParams = {id: data.id, type: 'form', parent: this}
+    }
+    let routeName = this.currentHtml.substring(0, this.currentHtml.length - 1)
+    this.setParames(routeName, nextParams)
+    this.$router.push({path: `/${routeName}/${data.id}`})
+  }
+  // 删除一行
+  deleteRow (params) {
+    this.$confirm('确认删除？', '友情提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      let pageurl = this.getPageUrl()
+      let url = pageurl.substring(0, pageurl.lastIndexOf('/'))
+      this.Del({url: `${url}/${params.id}`}).then(data => {
+        if (data.code === 1) {
+          if (this.alertMsg) {
+            this.afterGetData(this.alertMsg, {type: 'del', result: data})
+          } else {
+            this.message('服务器未知错误', '友情提示')
+          }
+        } else {
+          this.message('数据删除成功', '友情提示')
+        }
+        this.filterByserchObj()
+      })
+    }).catch(() => {
+      this.$message({
+        type: 'info',
+        message: '操作失败'
+      })
+    })
+  }
 
-   getTree (arr, treeChieldName, pidname) {
-     let parent = {}
-     let all = {}
-     arr.forEach(ele => {
-       if (parent.hasOwnProperty(ele.pid) && ele.pid !== 0) {
-         parent[ele[pidname]].push(ele)
-       } else if (ele[pidname] !== 0) {
-         parent[ele[pidname]] = [ele]
-       }
-       all[ele.id] = 1
-     })
-     let tree = []
-     arr.forEach(ele => {
-       ele[treeChieldName] = parent[ele.id]
-       if (ele.pid === 0) {
-         tree.push(ele)
-       } else {
-         if (!all.hasOwnProperty(ele.pid)) {
-           tree.push(ele)
-         }
-       }
-     })
-     return tree
-   }
+  // 充值表单
+  resetForm (formName) {
+    this.$router.go(-1)
+  }
 
-   geturl (url) {
-     return `${this.serverUrl.base[this.servername]}${url}`
-   }
+  submitForm (formName) {
+    this.$refs[formName].validate((valid) => {
+      if (valid) {
+        let params = this.getParames(this.currentHtml)
+        if (this.eidtLastFormData) {
+          this.beforeSubmit(this.eidtLastFormData, this.formData)
+        }
+        if (params.id === 'new') {
+          // 一对多的情况
+          if (params.type === 'rform') {
+            this.formData.tableName = params.tableName
+            this.formData[params.fileName] = params.rid
+          }
+          this.insert({url: this.getFromUrl(), params: [this.formData]}).then(ele => {
+            // 如果自定自定一乐返回拦截
+            if (this.beforResetFormData) {
+              this.submitSucess(this.beforResetFormData, ele)
+              return
+            }
+            if (ele.code === 0) {
+              // 多对一的情况
+              if (params.type === 'rmform') {
+                this.select(`${params.rUrl}/${params.rid}`).then(data => {
+                  let rdata = data
+                  rdata[params.fileName] = ele.data[0]
+                  this.update({url: params, params: [rdata]}).then(ele => {
+                    if (ele.code === 0) {
+                      this.message('数据保存成功', '友情提示')
+                      this.formData = ele.data[0]
+                      //  如果自定了跳转
+                      if (this.replaceJump) {
+                        this.interruptJump(this.replaceJump)
+                        return
+                      }
+                      this.$router.go(-1)
+                    } else {
+                      this.message(ele.msg, '友情提示')
+                    }
+                  })
+                })
+                return true
+              }
+              this.formData = ele.data[0]
+              this.message('数据保存成功', '友情提示')
+              //  如果自定了跳转
+              if (this.replaceJump) {
+                this.interruptJump(this.replaceJump)
+                return
+              }
+              this.$router.go(-1)
+            } else {
+              this.message(ele.msg, '友情提示')
+            }
+          })
+        } else {
+          this.update({url: this.getFromUrl(), params: [this.formData]}).then(ele => {
+            // 如果自定自定一乐返回拦截
+            if (this.beforResetFormData) {
+              this.submitSucess(this.beforResetFormData, ele)
+              return
+            }
+            if (ele.code === 0) {
+              this.message('修改数据成功', '友情提示')
+              this.formData = ele.data[0]
+              if (this.replaceJump) {
+                this.interruptJump(this.replaceJump)
+                return
+              }
+              this.$router.go(-1)
+            } else {
+              this.message(ele.msg, '友情提示')
+            }
+          })
+        }
+      } else {
+        return false
+      }
+    })
+  }
 
-   handleSizeChange (val) {
-     this.params.pageSize = val
-     this.filterByserchObj()
-   }
+  message (msg, title) {
+    this.$alert(msg, title, {
+      confirmButtonText: '确定',
+      callback: action => {
+        this.$message({
+          type: 'info',
+          message: `action: ${ action }`
+        })
+      }
+    })
+  }
+  messageSure (msg, title, fun, params) {
+    this.$confirm(msg, title, {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      fun(params)
+      this.$message({
+        type: 'success',
+        message: '操作成功!'
+      })
+    }).catch(() => {
+      this.$message({
+        type: 'info',
+        message: '操作失败'
+      })
+    })
+  }
 
-   handleCurrentChange (val) {
-     this.params.pageNum = val
-     this.filterByserchObj()
-   }
+  getTree (arr, treeChieldName, pidname) {
+    let parent = {}
+    let all = {}
+    arr.forEach(ele => {
+      if (parent.hasOwnProperty(ele.pid) && ele.pid !== 0) {
+        parent[ele[pidname]].push(ele)
+      } else if (ele[pidname] !== 0) {
+        parent[ele[pidname]] = [ele]
+      }
+      all[ele.id] = 1
+    })
+    let tree = []
+    arr.forEach(ele => {
+      ele[treeChieldName] = parent[ele.id]
+      if (ele.pid === 0) {
+        tree.push(ele)
+      } else {
+        if (!all.hasOwnProperty(ele.pid)) {
+          tree.push(ele)
+        }
+      }
+    })
+    return tree
+  }
 
-   // tab 标签点击事件
-   handleClick (tab, event) {
-   }
-   // get 请求，如果时是使用后台生成的接口用的是 dynamicParams 名字请用 dynamicParams请传true
-   select (url, params, dynamicParams, flags) {
-     let paramobj
-     if (params && dynamicParams) {
-       paramobj = {'dynameicParams': JSON.stringify(params)}
-       if (flags) {
-         if (Array.isArray(flags)) {
-           flags.forEach(ele => {
-             paramobj[ele.key] = ele.value
-           })
-         } else {
-           paramobj[flags.key] = flags.value
-         }
-       }
-     }
-     return this.Get({url: url, params: paramobj}).then(ele => {
-       return ele.data
-     })
-   }
+  geturl (url) {
+    return `${this.serverUrl.base[this.servername]}${url}`
+  }
 
-   remove (url, params, dynamicParams, flags) {
-     let paramobj
-     if (params && dynamicParams) {
-       paramobj = {'dynameicParams': JSON.stringify(params)}
-       if (flags) {
-         if (Array.isArray(flags)) {
-           flags.forEach(ele => {
-             paramobj[ele.key] = ele.value
-           })
-         } else {
-           paramobj[flags.key] = flags.value
-         }
-       }
-     }
-     return this.Del({url: url, params: paramobj}).then(ele => {
-       return ele.data
-     })
-   }
+  handleSizeChange (val) {
+    this.params.pageSize = val
+    this.filterByserchObj()
+  }
 
-   created () {
-     if (this.currentHtml.search('table') >= 0) {
-       this.filterByserchObj()
-     } else if (this.currentHtml.search('form') >= 0) {
-       this.getFormData()
-       this.tabPosition = this.currentHtml === 'rmform' ? 'right' : 'top'
-     }
-   }
- }
+  handleCurrentChange (val) {
+    this.params.pageNum = val
+    this.filterByserchObj()
+  }
+
+  // tab 标签点击事件
+  handleClick (tab, event) {
+  }
+  // get 请求，如果时是使用后台生成的接口用的是 dynamicParams 名字请用 dynamicParams请传true
+  select (url, params, dynamicParams, flags) {
+    let paramobj
+    if (params && dynamicParams) {
+      paramobj = {'dynameicParams': JSON.stringify(params)}
+      if (flags) {
+        if (Array.isArray(flags)) {
+          flags.forEach(ele => {
+            paramobj[ele.key] = ele.value
+          })
+        } else {
+          paramobj[flags.key] = flags.value
+        }
+      }
+    }
+    return this.Get({url: url, params: paramobj}).then(ele => {
+      return ele.data
+    })
+  }
+
+  remove (url, params, dynamicParams, flags) {
+    let paramobj
+    if (params && dynamicParams) {
+      paramobj = {'dynameicParams': JSON.stringify(params)}
+      if (flags) {
+        if (Array.isArray(flags)) {
+          flags.forEach(ele => {
+            paramobj[ele.key] = ele.value
+          })
+        } else {
+          paramobj[flags.key] = flags.value
+        }
+      }
+    }
+    return this.Del({url: url, params: paramobj}).then(ele => {
+      return ele.data
+    })
+  }
+
+  /**
+   * 多对一组装级联选择器
+   * dataArr: [{},{},{}],
+   * keyArr:[{lable: '', value: '' ,parent: 'id', chiled: 'filedname',isroot: true },...]
+   * */
+  cascaderMake (dataArr, keyArr) {
+    let cloneKey = []
+    for (let i = 0; i < keyArr.length; i++) {
+      cloneKey.push(keyArr[i])
+    }
+    let obj = {}
+    this.getKeyObj(dataArr, cloneKey, obj)
+    let arr = dataArr
+    for (let i = 0; i < keyArr.length - 1; i++) {
+      let key = keyArr[i].chiled
+      arr = this.getchiled(arr, obj[key], keyArr[i])
+    }
+    let key = keyArr[keyArr.length - 1]
+    arr.forEach(ele => {
+      ele.label = ele[key.label]
+      ele.value = ele[key.value]
+    })
+    return arr
+  }
+  getchiled (subarr, parentArr, keyObj) {
+    for (let m = 0; m < parentArr.length; m++) {
+      for (let i = 0; i < subarr.length; i++) {
+        if ((parentArr[m])[keyObj.parent] === ((subarr[i])[keyObj.chiled])[keyObj.parent]) {
+          if (!parentArr[m].children) {
+            parentArr[m].children = []
+          }
+          subarr[i].label = subarr[i][keyObj.label]
+          subarr[i].value = subarr[i][keyObj.value]
+          parentArr[m].children.push(subarr[i])
+          break
+        }
+      }
+    }
+    return parentArr
+  }
+  getKeyObj (dataArr, keyArr, obj) {
+    if (keyArr.length > 0) {
+      let key = keyArr[0].chiled
+      let arr = []
+      if (key === 'root') {
+        return
+      }
+      dataArr.forEach(ele => {
+        arr.push(ele[key])
+      })
+      obj[key] = arr
+      keyArr.splice(0, 1)
+      this.getKeyObj(arr, keyArr, obj)
+    }
+  }
+
+  created () {
+    let params = this.getParames(this.currentHtml)
+    if (params && params.type.search('table') >= 0) {
+      this.filterByserchObj()
+    } else if (params && params.type.search('form') >= 0) {
+      this.getFormData()
+    }
+  }
+}

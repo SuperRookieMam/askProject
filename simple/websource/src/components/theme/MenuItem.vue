@@ -23,7 +23,8 @@
   import { Component, Prop } from 'vue-property-decorator'
 
   @Component({
-    name: 'menu-item'
+    name: 'menu-item',
+    inject: ['setParames']
   })
   export default class MenuItem extends Vue {
     @Prop({default: () => {}})
@@ -31,11 +32,8 @@
 
     toTarget (item) {
       if (item.isMenu === 1) {
-        if (item.type === 'table') {
-          this.$router.push({path: `/${item.tableRoute}/${item.type}/${item.formRoute}/none_none_0`})
-        } else {
-          this.$router.push({path: `/${item.tableRoute}`})
-        }
+        this.setParames(item.tableRoute, {type: item.type, formRoute: item.formRoute})
+        this.$router.push({path: `/${item.tableRoute}`})
       }
     }
   }

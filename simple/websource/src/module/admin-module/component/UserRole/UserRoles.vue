@@ -6,16 +6,16 @@
              label-width="80px">
       <el-row>
         <el-col :span="6">
-          <el-form-item label="题目类型">
-            <el-input v-model="serchObj['subjectName']" placeholder="请输入"/>
+          <el-form-item label="用户账号">
+            <el-input v-model="serchObj['userName']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
         <el-col :span="6">
-          <el-form-item label="所属菜品">
-            <el-input v-model="serchObj['food.foodName']" placeholder="请输入"/>
+          <el-form-item label="角色编号">
+            <el-input v-model="serchObj['roleId']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
-        <el-col :span="3" style="float: right">
+        <el-col :span="3" style="float: right;">
           <el-button type="primary"
                      size="mini"
                      @click="filterByserchObj">
@@ -33,21 +33,14 @@
               v-loading="loading"
               style="width: 100%">
       <el-table-column
-        label="id"
+        label="编号"
         prop="id"/>
-      <el-table-column label="题目类型" prop="subjectName"/>
-      <el-table-column label="答案类型" prop="choose"/>
-      <el-table-column label="分值" prop="score"/>
-      <el-table-column label="所属菜品" prop="score">
-        <template slot-scope="scope">
-          {{ scope.row.food ? scope.row.food.foodName : '' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="题目描述" prop="description">
-        <template slot-scope="scope">
-          {{ scope.row.description && scope.row.description.length > 10 ? (scope.row.description.substring(0,10) + '...') : scope.row.description }}
-        </template>
-      </el-table-column>
+      <el-table-column
+        label="账号"
+        prop="userName"/>
+      <el-table-column
+        label="角色"
+        prop="roleName"/>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
@@ -63,28 +56,38 @@
       :page-size="params.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalCount"/>
+    <el-dialog
+      title="新增类型"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <user-role v-if="dialogVisible"/>
+    </el-dialog>
   </div>
 </template>
 <script>
-  import {Component, Mixins} from 'vue-property-decorator'
+  import { Component, Mixins } from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
+  import UserRole from './UserRole'
+  @Component({
+    components: {
+      UserRole
+    }
+  })
+  export default class UserRoles extends Mixins(TableBase) {
+    currentHtml = 'userRoles'
 
-  @Component
-  export default class Exams extends Mixins(TableBase) {
-    currentHtml = 'exams'
+    dialogVisible = false
 
-    setRequestParam (params) {
-      let basicsParams = []
-      for (var key in this.serchObj) {
-        if (this.serchObj[key] !== '') {
-          basicsParams.push({key: key, type: 'like', value: this.serchObj[key]})
-        }
-      }
-      this.params.basicsParams = basicsParams
+    replaceEdit (data) {
+      this.setParames('userRole',
+        {id: data.id,
+          type: 'form',
+          parent: this})
+      this.dialogVisible = true
     }
 
     getPageUrl () {
-      return this.geturl(this.serverUrl.ask.examPage)
+      return this.geturl(this.serverUrl.shopping.userRolePage)
     }
   }
 </script>

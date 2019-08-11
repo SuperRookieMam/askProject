@@ -18,11 +18,11 @@ export default [{
       props: true
     }, {
       name: 'menuFunctions',
-      path: '/menuFunctions/:currentHtml/:jumpName/:rmsg',
+      path: '/menuFunctions',
       component: () => import('../../admin-module/component/MenuFunction/MenuFunctions')
     }, {
       name: 'menuFunction',
-      path: '/menuFunction/:currentHtml/:id/:rmsg',
+      path: '/menuFunction/:id',
       component: () => import('../../admin-module/component/MenuFunction/MenuFunction'),
       props: true
     }, {
@@ -37,45 +37,65 @@ export default [{
       props: true
     }, {
       name: 'food',
-      path: '/food/:currentHtml/:id/:rmsg',
+      path: '/food/:id',
       component: () => import('../../admin-module/component/food/food'),
       props: true
     }, {
     name: 'foods',
-      path: '/foods/:currentHtml/:jumpName/:rmsg',
+      path: '/foods',
       component: () => import('../../admin-module/component/food/foods'),
       props: true
     }, {
       name: 'exam',
-      path: '/exam/:currentHtml/:id/:rmsg',
+      path: '/exam/:id',
       component: () => import('../../admin-module/component/Exams/Exam'),
       props: true
     }, {
       name: 'exams',
-      path: '/exams/:currentHtml/:jumpName/:rmsg',
+      path: '/exams',
       component: () => import('../../admin-module/component/Exams/Exams'),
       props: true
     }, {
       name: 'result',
-      path: '/result/:currentHtml/:id/:rmsg',
+      path: '/result/:id',
       component: () => import('../../admin-module/component/Result/Result'),
       props: true
     }, {
       name: 'results',
-      path: '/results/:currentHtml/:jumpName/:rmsg',
+      path: '/results',
       component: () => import('../../admin-module/component/Result/Results'),
       props: true
     },
       {
         name: 'oAthUserDetailes',
-        path: '/oAthUserDetailes/:currentHtml/:id/:rmsg',
+        path: '/oAthUserDetailes/:id',
         component: () => import('../../admin-module/component/OAthUserDetailes/OAthUserDetailes'),
         props: true
       }, {
         name: 'oAthUserDetailess',
-        path: '/oAthUserDetailes/:currentHtml/:jumpName/:rmsg',
+        path: '/oAthUserDetailess',
         component: () => import('../../admin-module/component/OAthUserDetailes/OAthUserDetailess'),
         props: true
+      }, {
+        name: 'roleInfo',
+        path: '/roleInfo/:id',
+        props: true,
+        component: () => import('../component/RoleInfo/RoleInfo')
+      }, {
+        name: 'roleInfos',
+        path: '/roleInfos',
+        props: true,
+        component: () => import('../component/RoleInfo/RoleInfos')
+      }, {
+        name: 'userRole',
+        path: '/userRole/:id',
+        props: true,
+        component: () => import('../component/UserRole/UserRole')
+      }, {
+        name: 'userRoles',
+        path: '/userRoles',
+        props: true,
+        component: () => import('../component/UserRole/UserRoles')
       }
     ]
    }

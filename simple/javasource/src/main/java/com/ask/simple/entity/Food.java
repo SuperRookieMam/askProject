@@ -40,16 +40,12 @@ public class Food extends BaseEntity {
     private String description;
 
     @Column(name = "img_url_")
-    @Description(label = "图片url")
+    @Description(label = "图片")
     private String imgUrl;
 
     @Column(name = "process_url_")
-    @Description(label = "烹饪过程url")
+    @Description(label = "烹饪过程")
     private String processUrls;
-    //一对多，生成中间表由 jpa自己维护
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "food_id_")
-    private List<Exam> exams = new ArrayList<Exam>();
 
 
 }
