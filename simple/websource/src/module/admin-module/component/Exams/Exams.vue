@@ -5,22 +5,22 @@
              size="mini"
              label-width="80px">
       <el-row>
-        <el-col :span="6">
-          <el-form-item label="题目类型">
-            <el-input v-model="serchObj['subjectName']" placeholder="请输入"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="所属菜品">
-            <el-input v-model="serchObj['food.foodName']" placeholder="请输入"/>
-          </el-form-item>
-        </el-col>
+        <!--<el-col :span="6">-->
+        <!--<el-form-item label="题目类型">-->
+        <!--<el-input v-model="serchObj['subjectName']" placeholder="请输入"/>-->
+        <!--</el-form-item>-->
+        <!--</el-col>-->
+        <!--<el-col :span="6">-->
+        <!--<el-form-item label="所属菜品">-->
+        <!--<el-input v-model="serchObj['food.foodName']" placeholder="请输入"/>-->
+        <!--</el-form-item>-->
+        <!--</el-col>-->
         <el-col :span="3" style="float: right">
-          <el-button type="primary"
-                     size="mini"
-                     @click="filterByserchObj">
-            筛选
-          </el-button>
+          <!--<el-button type="primary"-->
+          <!--size="mini"-->
+          <!--@click="filterByserchObj">-->
+          <!--筛选-->
+          <!--</el-button>-->
           <el-button type="primary"
                      size="mini"
                      @click="add">
@@ -55,32 +55,49 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="params.pageNum"
-      :page-sizes="pageSizes"
-      :page-size="params.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="totalCount"/>
+    <el-dialog
+      title="新增题目"
+      :visible.sync="dialogVisible"
+      width="50%">
+      <exam v-if="dialogVisible"/>
+    </el-dialog>
+    <!--<el-pagination-->
+    <!--@size-change="handleSizeChange"-->
+    <!--@current-change="handleCurrentChange"-->
+    <!--:current-page="params.pageNum"-->
+    <!--:page-sizes="pageSizes"-->
+    <!--:page-size="params.pageSize"-->
+    <!--layout="total, sizes, prev, pager, next, jumper"-->
+    <!--:total="totalCount"/>-->
   </div>
 </template>
 <script>
   import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
+  import Exam from './Exam'
 
-  @Component
+  @Component({
+    components: {
+      Exam
+    }
+  })
   export default class Exams extends Mixins(TableBase) {
     currentHtml = 'exams'
 
-    setRequestParam (params) {
-      let basicsParams = []
-      for (var key in this.serchObj) {
-        if (this.serchObj[key] !== '') {
-          basicsParams.push({key: key, type: 'like', value: this.serchObj[key]})
-        }
-      }
-      this.params.basicsParams = basicsParams
+    dialogVisible = false
+
+    replaceEdit (data) {
+      let params = this.getParames('exams')
+      this.setParames('exam', {
+        type: 'rform',
+        id: data.id,
+        tableName: 'Food',
+        fileName: 'exams',
+        rid: params.rid,
+        parent: this,
+        rparent: params.parent
+      })
+      this.dialogVisible = true
     }
 
     getPageUrl () {

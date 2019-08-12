@@ -8,18 +8,18 @@
              size="mini">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="基础信息" name="base">
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="所属菜品" prop="score">
-                <many-to-one-cascader
-                  :data-arr="foods"
-                  @select-change="selectChange"
-                  :props="props"
-                  :rule-arr="ruleArr"
-                  v-if="temp"/>
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <!--<el-row>-->
+          <!--<el-col :span="12">-->
+          <!--<el-form-item label="所属菜品" prop="score">-->
+          <!--<many-to-one-cascader-->
+          <!--:data-arr="foods"-->
+          <!--@select-change="selectChange"-->
+          <!--:props="props"-->
+          <!--:rule-arr="ruleArr"-->
+          <!--v-if="temp"/>-->
+          <!--</el-form-item>-->
+          <!--</el-col>-->
+          <!--</el-row>-->
           <el-row>
             <el-col :span="12">
               <el-form-item label="题目类型" prop="subjectName">
@@ -78,6 +78,7 @@
   import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
   import ManyToOneCascader from '../../../../components/cascader/ManyToOneCascader'
+
   @Component({
     components: {
       ManyToOneCascader
@@ -86,23 +87,11 @@
   export default class Exam extends Mixins(TableBase) {
     currentHtml = 'exam'
     options = [{label: '味型', value: '味型', type: '四选一'},
-                {label: '主料', value: '主料', type: '八选四'},
-                {label: '辅料', value: '辅料', type: '十选六'},
-                {label: '调料', value: '调料', type: '十选六'},
-                {label: '成品特色', value: '成品特色', type: '四选一'},
-                {label: '渊源及文化', value: '渊源及文化', type: '六选三'}]
-    foods = []
-    ruleArr = [{label: 'foodName', value: 'id', parent: 'id', chiled: 'root'}]
-    temp = false
-
-    selectChange (val) {
-      for (let i = 0; i < this.foods.length; i++) {
-        if (this.foods[i].id === val[val.length - 1]) {
-          this.formData.food = this.foods[i]
-          break
-        }
-      }
-    }
+      {label: '主料', value: '主料', type: '八选四'},
+      {label: '辅料', value: '辅料', type: '十选六'},
+      {label: '调料', value: '调料', type: '十选六'},
+      {label: '成品特色', value: '成品特色', type: '四选一'},
+      {label: '渊源及文化', value: '渊源及文化', type: '六选三'}]
 
     changeSelect () {
       this.options.forEach(ele => {
@@ -111,24 +100,17 @@
         }
       })
     }
-    sucessResult (data) {
-      this.formData = data
-      this.select(this.geturl(this.serverUrl.ask.foodList), {}, true).then(data1 => {
-        this.foods = data1
-        this.temp = true
-      })
-    }
 
     getFromUrl () {
       return this.geturl(this.serverUrl.ask.examUpdate)
     }
 
-    rules = {}
-
-    props = {
-      label: 'foodName',
-      value: 'id',
-      children: 'children'
+    replaceJump (data) {
+      let params = this.getParames('exam')
+      this.formData = data
+      params.parent.dialogVisible = false
     }
+
+    rules = {}
   }
 </script>

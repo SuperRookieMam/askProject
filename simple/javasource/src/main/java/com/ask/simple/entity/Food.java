@@ -47,5 +47,8 @@ public class Food extends BaseEntity {
     @Description(label = "烹饪过程")
     private String processUrls;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exams_")
+    private List<Exam> exams;
 
 }

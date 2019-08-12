@@ -41,4 +41,7 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "table_name_")
     private String tableName;
+
+    @Column(name = "rid_")
+    private String rid;
 }

@@ -46,8 +46,12 @@ public class Exam extends BaseEntity {
     @Description(label = "分值")
     private Integer score;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "food_")
-    @Description(label = "菜品")
-    private Food food;
+//    @ManyToOne(cascade = CascadeType.REFRESH)
+//    @JoinColumn(name = "food_")
+//    @Description(label = "菜品")
+//    private Food food;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "results")
+    private List<Result> results;
 }

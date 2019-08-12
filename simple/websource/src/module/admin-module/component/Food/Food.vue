@@ -59,6 +59,9 @@
             </el-col>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane label="题目设置" name="exams">
+          <exams v-if="examsVisbale"/>
+        </el-tab-pane>
       </el-tabs>
       <el-row>
         <el-col :span="12">
@@ -78,14 +81,15 @@
 <script>
   import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
-
+  import Exams from '../Exams/Exams'
   @Component({
     components: {
+      Exams
     }
   })
   export default class Food extends Mixins(TableBase) {
     currentHtml = 'food'
-
+    examsVisbale = false
     getFromUrl () {
       return this.geturl(this.serverUrl.ask.foodUpdate)
     }
@@ -155,6 +159,20 @@
           url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.processUrls}`,
           name: this.formData.processUrls
         }]
+      }
+    }
+
+    handleClick (tab, event) {
+      if (tab.name === 'exams') {
+        let params = this.getParames('food')
+        this.setParames('exams', {
+          type: 'rtable',
+          tableName: 'Food',
+          fileName: 'exams',
+          rid: params.id,
+          parent: this
+        })
+        this.examsVisbale = true
       }
     }
   }

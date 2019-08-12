@@ -64,14 +64,15 @@
        tableName: '' 这个就是rtable接受的参数穿过来的
        fileName: '' 这个也是rtable接受的参数穿过来的
        rid: '3'  这个也是rtable接受的参数穿过来的
-       
+       parent: this, //代表格的类
+       rparent: params.parent //引用表格的父类
+
        // rmform 类型需要的参数  多对一
       type：'rform' 表明是一多表格页面跳转到的表单页面
       id: 'new' 如果是form表单的 需要请求的id，新增为new
-      rUrl: 'http://localhost:80000/....' 需要持久化被引用实体借口地址
-      rid： '1' 那个实体引用的多方的哪一条数据的id
       fileName：'' 引用放字段名
-      
+      parent: this, //代表单的类
+
       ... 如果你有特殊的需求还需要特定的传参，请自定义
      }
 ###setParames:方法说明

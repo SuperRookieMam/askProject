@@ -56,6 +56,11 @@ export default class TableBase extends Vue {
     } else {
       this.setSearchObjToParams(params)
     }
+    if (params.type === 'rtable') {
+      this.getRtableData(params)
+      this.loading = false
+       return
+    }
     this.select(this.getPageUrl(), this.params, true).then(data => {
       if (this.sucessResult) {
         this.afterGetData(this.sucessResult, data)
@@ -72,6 +77,34 @@ export default class TableBase extends Vue {
     })
     this.loading = false
   }
+  /**
+   * 处理 rtable 的方法
+   * */
+  getRtableData (params) {
+    this.tableData = params.parent.formData[params.fileName] ? params.parent.formData[params.fileName] : []
+    if (params.rid !== 'new') {
+      let flage = false
+      this.tableData.forEach(ele => {
+        if (ele.rid) {
+          flage = true
+          ele.rid = `${params.rid}`
+        }
+      })
+      if (flage) {
+        let url = this.getPageUrl()
+        this.update({url: url.substring(0, url.lastIndexOf('/')), params: this.tableData}).then(data => {
+          if (this.sucessResult) {
+            this.afterGetData(this.sucessResult, data)
+          }
+          params.parent.formData[params.fileName] = data.data
+          this.tableData = data.data
+          this.loading = false
+        })
+      }
+    }
+    this.loading = false
+  }
+
   /**
    * 默认的参数设置
    * */
@@ -195,40 +228,16 @@ export default class TableBase extends Vue {
           this.beforeSubmit(this.eidtLastFormData, this.formData)
         }
         if (params.id === 'new') {
-          // 一对多的情况
           if (params.type === 'rform') {
-            this.formData.tableName = params.tableName
-            this.formData[params.fileName] = params.rid
+            this.rformSubmit(params)
+            return
+          }
+          if (params.type === 'rmform') {
+            this.rmSumbmitForm(params)
+            return
           }
           this.insert({url: this.getFromUrl(), params: [this.formData]}).then(ele => {
-            // 如果自定自定一乐返回拦截
-            if (this.beforResetFormData) {
-              this.submitSucess(this.beforResetFormData, ele)
-              return
-            }
             if (ele.code === 0) {
-              // 多对一的情况
-              if (params.type === 'rmform') {
-                this.select(`${params.rUrl}/${params.rid}`).then(data => {
-                  let rdata = data
-                  rdata[params.fileName] = ele.data[0]
-                  this.update({url: params, params: [rdata]}).then(ele => {
-                    if (ele.code === 0) {
-                      this.message('数据保存成功', '友情提示')
-                      this.formData = ele.data[0]
-                      //  如果自定了跳转
-                      if (this.replaceJump) {
-                        this.interruptJump(this.replaceJump)
-                        return
-                      }
-                      this.$router.go(-1)
-                    } else {
-                      this.message(ele.msg, '友情提示')
-                    }
-                  })
-                })
-                return true
-              }
               this.formData = ele.data[0]
               this.message('数据保存成功', '友情提示')
               //  如果自定了跳转
@@ -265,6 +274,42 @@ export default class TableBase extends Vue {
         return false
       }
     })
+  }
+  /**
+   * 处理一对多的情况
+   * */
+  rformSubmit (params) {
+    if (!params.rparent.formData[params.fileName]) {
+      params.rparent.formData[params.fileName] = []
+    }
+    this.formData.tableName = params.tableName
+    this.formData.rid = params.rid
+    params.rparent.formData[params.fileName].push(this.formData)
+    params.parent.tableData = params.rparent.formData[params.fileName]
+    if (this.beforResetFormData) {
+      this.submitSucess(this.beforResetFormData, this.formData)
+      this.message('数据保存成功', '友情提示')
+    }
+    if (this.replaceJump) {
+      this.interruptJump(this.replaceJump)
+      return
+    }
+    this.$router.go(-1)
+  }
+
+  rmSumbmitForm (params) {
+    params.parent[params.fileName] = this.formData
+    this.message('数据保存成功', '友情提示')
+    // 如果自定自定一乐返回拦截
+    if (this.beforResetFormData) {
+      this.submitSucess(this.beforResetFormData, params.parent[params.fileName])
+      return
+    }
+    if (this.replaceJump) {
+      this.interruptJump(this.replaceJump)
+      return
+    }
+    this.$router.go(-1)
   }
 
   message (msg, title) {
