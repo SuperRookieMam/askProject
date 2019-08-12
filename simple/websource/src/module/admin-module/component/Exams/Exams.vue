@@ -87,16 +87,6 @@
     dialogVisible = false
 
     replaceEdit (data) {
-      let params = this.getParames('exams')
-      this.setParames('exam', {
-        type: 'rform',
-        id: data.id,
-        tableName: 'Food',
-        fileName: 'exams',
-        rid: params.rid,
-        parent: this,
-        rparent: params.parent
-      })
       this.dialogVisible = true
     }
 
