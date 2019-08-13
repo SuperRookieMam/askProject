@@ -64,7 +64,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item>
-                <el-button type="primary" @click="submitForm('formData')">
+                <el-button type="primary" @click="submitFormValidat(formData)">
                   保存
                 </el-button>
                 <el-button @click="resetForm('formData')">
@@ -174,6 +174,39 @@
         })
         this.examsVisbale = true
       }
+    }
+
+    submitFormValidat (formData) {
+      // 数量
+      if (formData.exams === undefined || formData.exams === null || formData.exams === '' || formData.exams.size !== 6) {
+        alert('该菜品的题目必须为6道')
+        return
+      }
+      // 分值
+       let totalScore = 0
+      for (var t in formData.exams) {
+          if (formData.exams[t].results === undefined || formData.exams[t].results === '' || formData.exams[t].results === null) {
+            alert('该试题答案为空')
+            return
+          } else {
+            let score = 0
+            for (var j in formData.exams[t].results) {
+              if (formData.exams[t].results[j].right === true) {
+                score = score + formData.exams[t].results[j].score
+              }
+            }
+            if (score !== formData.exams[t].score) {
+              alert('该试题的总分与对应正确答案总分不符，请检查')
+              return
+            }
+            totalScore = totalScore + score
+          }
+      }
+      // 判断总分是否为100
+      if (totalScore !== 100) {
+        alert('该菜品试题总分应为100')
+      }
+      this.submitForm('formData')
     }
   }
 </script>

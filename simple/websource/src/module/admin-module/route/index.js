@@ -96,7 +96,18 @@ export default [{
         path: '/userRoles',
         props: true,
         component: () => import('../component/UserRole/UserRoles')
+      }, {
+        name: 'record',
+        path: '/record/:id',
+        props: true,
+        component: () => import('../component/Record/Record')
+      }, {
+        name: 'records',
+        path: '/records',
+        props: true,
+        component: () => import('../component/Record/Records')
       }
+
     ]
    }
 
