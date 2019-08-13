@@ -61,20 +61,20 @@
         </el-tab-pane>
         <el-tab-pane label="题目设置" name="exams">
           <exams v-if="examsVisbale"/>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item>
+                <el-button type="primary" @click="submitForm('formData')">
+                  保存
+                </el-button>
+                <el-button @click="resetForm('formData')">
+                  取消
+                </el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-tab-pane>
       </el-tabs>
-      <el-row>
-        <el-col :span="12">
-          <el-form-item>
-            <el-button type="primary" @click="submitForm('formData')">
-              保存
-            </el-button>
-            <el-button @click="resetForm('formData')">
-              取消
-            </el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
     </el-form>
   </div>
 </template>

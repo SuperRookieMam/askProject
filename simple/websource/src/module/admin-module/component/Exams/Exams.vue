@@ -5,22 +5,7 @@
              size="mini"
              label-width="80px">
       <el-row>
-        <!--<el-col :span="6">-->
-        <!--<el-form-item label="题目类型">-->
-        <!--<el-input v-model="serchObj['subjectName']" placeholder="请输入"/>-->
-        <!--</el-form-item>-->
-        <!--</el-col>-->
-        <!--<el-col :span="6">-->
-        <!--<el-form-item label="所属菜品">-->
-        <!--<el-input v-model="serchObj['food.foodName']" placeholder="请输入"/>-->
-        <!--</el-form-item>-->
-        <!--</el-col>-->
         <el-col :span="3" style="float: right">
-          <!--<el-button type="primary"-->
-          <!--size="mini"-->
-          <!--@click="filterByserchObj">-->
-          <!--筛选-->
-          <!--</el-button>-->
           <el-button type="primary"
                      size="mini"
                      @click="add">
@@ -35,14 +20,21 @@
       <el-table-column type="expand">
         <template slot-scope="scope">
           <el-table
-            label-position="left"
-            inline
             :data="scope.row.results"
-            style="background-color: #dddddd"
-            class="demo-table-expand">
-            <el-table-column label="分值" prop="score"/>
+            v-loading="loading"
+            :show-header="false"
+            :row-class-name="tableRowClassName"
+            style="width: 100%;">
+            <el-table-column label="id" prop="id"/>
+            <el-table-column label="分值" prop="score" :formatter="statusFormatter1"/>
             <el-table-column label="正确" prop="right" :formatter="statusFormatter"/>
-            <el-table-column label="答案" prop="description"/>
+            <el-table-column label="答案" prop="description" :formatter="statusFormatter2"/>
+            <el-table-column label="操作" :min-width="60">
+              <template slot-scope="scope1">
+                <el-button type="text" size="mini" @click="rusultEdit(scope1.row,scope.row)">详情</el-button>
+                <el-button type="text" size="mini" @click="deleteRusult(scope.row,scope1.row)">删除</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </template>
       </el-table-column>
@@ -59,7 +51,7 @@
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
           <el-button type="text" size="mini" @click="deleteRow(scope.row)">删除</el-button>
-          <el-button type="text" size="mini" @click="addResult(scope.row)">添加答案</el-button>
+          <el-button type="text" size="mini" @click="addRerult(scope.row)">新增答案</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -70,10 +62,10 @@
       <exam v-if="dialogVisible"/>
     </el-dialog>
     <el-dialog
-      title="新增答案"
+      title="新增题目"
       :visible.sync="dialogVisible1"
       width="50%">
-      <exam v-if="dialogVisible1"/>
+      <result v-if="dialogVisible1"/>
     </el-dialog>
   </div>
 </template>
@@ -81,10 +73,11 @@
   import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
   import Exam from './Exam'
-
+  import Result from './Result'
   @Component({
     components: {
-      Exam
+      Exam,
+      Result
     }
   })
   export default class Exams extends Mixins(TableBase) {
@@ -114,11 +107,62 @@
         return '错误'
       }
     }
-    addResult (data) {
-      if (!data.reults) {
-        data.reults = []
+
+    statusFormatter1 (row) {
+      return row.score + '分'
+    }
+
+    statusFormatter2 (row) {
+      return row.description && row.description.length < 10 ? row.description : row.description.substring(0, 10)
+    }
+
+    tableRowClassName ({row, rowIndex}) {
+      if (rowIndex % 2 === 0) {
+        return 'warning-row'
+      } else {
+        return 'success-row'
       }
+    }
+    addRerult (data) {
+      this.rusultEdit({id: 'new'}, data)
+    }
+
+    rusultEdit (data, pdata) {
+      this.setParames('result', {
+        type: 'other',
+        id: data.id,
+        tableName: 'Exam',
+        fileName: 'results',
+        rid: pdata.id ? pdata.id : 'new',
+        parent: pdata,
+        data: data,
+        rparent: this
+      })
       this.dialogVisible1 = true
+    }
+
+    deleteRusult (pdata, data) {
+      this.$confirm('确认删除？', '友情提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        for (let i = 0; i < pdata.results.length; i++) {
+          if (JSON.stringify(pdata.results[i]) === JSON.stringify(data)) {
+            pdata.results.splice(i, 1)
+            return
+          }
+        }
+      })
     }
   }
 </script>
+<style>
+  .el-table .warning-row {
+    background: oldlace;
+  }
+
+  .el-table .success-row {
+    background: #f0f9eb;
+  }
+</style>

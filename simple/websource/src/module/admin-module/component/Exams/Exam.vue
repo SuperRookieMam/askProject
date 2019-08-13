@@ -87,11 +87,11 @@
   export default class Exam extends Mixins(TableBase) {
     currentHtml = 'exam'
     options = [{label: '味型', value: '味型', type: '四选一'},
-      {label: '主料', value: '主料', type: '八选四'},
-      {label: '辅料', value: '辅料', type: '十选六'},
-      {label: '调料', value: '调料', type: '十选六'},
-      {label: '成品特色', value: '成品特色', type: '四选一'},
-      {label: '渊源及文化', value: '渊源及文化', type: '六选三'}]
+                {label: '主料', value: '主料', type: '八选四'},
+                {label: '辅料', value: '辅料', type: '十选六'},
+                {label: '调料', value: '调料', type: '十选六'},
+                {label: '成品特色', value: '成品特色', type: '四选一'},
+                {label: '渊源及文化', value: '渊源及文化', type: '六选三'}]
 
     changeSelect () {
       this.options.forEach(ele => {

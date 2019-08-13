@@ -215,15 +215,20 @@ export default class TableBase extends Vue {
   }
 
   // 删除一行
-  deleteRow (params) {
+  deleteRow (row) {
     this.$confirm('确认删除？', '友情提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     }).then(() => {
+      let params = this.getParames(this.currentHtml)
+      if (params.type === 'rtable') {
+          this.delteRtable(params, row)
+          return
+      }
       let pageurl = this.getPageUrl()
       let url = pageurl.substring(0, pageurl.lastIndexOf('/'))
-      this.Del({url: `${url}/${params.id}`}).then(data => {
+      this.Del({url: `${url}/${row.id}`}).then(data => {
         if (data.code === 1) {
           if (this.alertMsg) {
             this.afterGetData(this.alertMsg, {type: 'del', result: data})
@@ -243,6 +248,13 @@ export default class TableBase extends Vue {
     })
   }
 
+  delteRtable (params, row) {
+    for (let i = 0; i < params.parent.formData[params.fileName].length; i++) {
+      if (JSON.stringify(row) === JSON.stringify(params.parent.formData[params.fileName][i])) {
+        params.parent.formData[params.fileName].splice(i, 1)
+      }
+    }
+  }
   // 充值表单
   resetForm (formName) {
     this.$router.go(-1)

@@ -11,7 +11,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否正确" prop="right">
-                <el-select v-model="formData.right" placeholder="请选择" @change="changeValue">
+                <el-select v-model="temp" placeholder="请选择" @change="changeValue">
                   <el-option
                     v-for="item in optionsRight"
                     :key="item.value"
@@ -40,7 +40,7 @@
       <el-row>
         <el-col :span="12">
           <el-form-item>
-            <el-button type="primary" @click="submitForm('formData')">
+            <el-button type="primary" @click="submitForm1('formData')">
               保存
             </el-button>
             <el-button @click="resetForm('formData')">
@@ -62,6 +62,8 @@
   export default class Result extends Mixins(TableBase) {
     currentHtml = 'result'
 
+    temp = '正确'
+
     optionsRight=[{
       value: 'true',
       label: '正确'
@@ -75,38 +77,45 @@
     }
 
     changeValue (val) {
-      if (val === 'true') {
-        return '正确'
+      if (val === '正确') {
+        this.formData.right = true
       } else {
-        return '错误'
+        this.formData.right = false
       }
     }
-
     rules = {}
 
-  //    sucessResult (data) {
-  //      this.formData = data
-  //      this.select(this.geturl(this.serverUrl.ask.examList), {}, true).then(data1 => {
-  //        this.exams = data1
-  //        this.temp = true
-  //      })
-  //    }
-  //    exams = []
-  //    temp = false
-  //    ruleArr = [{label: 'subjectName', value: 'id', parent: 'id', chiled: 'food'},
-  //                {label: 'foodName', value: 'id', parent: 'id', chiled: 'root'}]
-  //    selectChange (val) {
-  //      for (let i = 0; i < this.exams.length; i++) {
-  //        if (this.exams[i].id === val[val.length - 1]) {
-  //          this.formData.exam = this.exams[i]
-  //          break
-  //        }
-  //      }
-  //    }
-  //    props = {
-  //      label: 'subjectName',
-  //      value: 'id',
-  //      children: 'children'
-  //    }
+    submitForm1 (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let params = this.getParames(this.currentHtml)
+          if (!params.parent[params.fileName]) {
+            params.parent[params.fileName] = []
+          }
+          for (let i = 0; i < params.parent[params.fileName].length; i++) {
+            if (params.parent[params.fileName][i].id && params.parent[params.fileName][i].id === this.formData.id) {
+              params.rparent.dialogVisible1 = false
+              return
+            }
+          }
+          params.parent[params.fileName].push(this.formData)
+          params.rparent.dialogVisible1 = false
+        } else {
+            return false
+        }
+      })
+  }
+
+   created () {
+     let params = this.getParames(this.currentHtml)
+      if (params.id !== 'new') {
+          this.formData = params.data
+      }
+      if (this.formData.right) {
+        this.temp = '正确'
+      } else {
+        this.temp = '错误'
+      }
+   }
   }
 </script>
