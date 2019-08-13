@@ -37,8 +37,4 @@ public class Result extends BaseEntity {
     @Description(label = "是否正确")
     private boolean right;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "exam_")
-    private Exam  exam;
-
 }

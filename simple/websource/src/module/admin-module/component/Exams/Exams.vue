@@ -32,17 +32,24 @@
     <el-table :data="tableData"
               v-loading="loading"
               style="width: 100%">
-      <el-table-column
-        label="id"
-        prop="id"/>
+      <el-table-column type="expand">
+        <template slot-scope="scope">
+          <el-table
+            label-position="left"
+            inline
+            :data="scope.row.results"
+            style="background-color: #dddddd"
+            class="demo-table-expand">
+            <el-table-column label="分值" prop="score"/>
+            <el-table-column label="正确" prop="right" :formatter="statusFormatter"/>
+            <el-table-column label="答案" prop="description"/>
+          </el-table>
+        </template>
+      </el-table-column>
+      <el-table-column label="id" prop="id"/>
       <el-table-column label="题目类型" prop="subjectName"/>
       <el-table-column label="答案类型" prop="choose"/>
       <el-table-column label="分值" prop="score"/>
-      <el-table-column label="所属菜品" prop="score">
-        <template slot-scope="scope">
-          {{ scope.row.food ? scope.row.food.foodName : '' }}
-        </template>
-      </el-table-column>
       <el-table-column label="题目描述" prop="description">
         <template slot-scope="scope">
           {{ scope.row.description && scope.row.description.length > 10 ? (scope.row.description.substring(0,10) + '...') : scope.row.description }}
@@ -52,6 +59,7 @@
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>
           <el-button type="text" size="mini" @click="deleteRow(scope.row)">删除</el-button>
+          <el-button type="text" size="mini" @click="addResult(scope.row)">添加答案</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,14 +69,12 @@
       width="50%">
       <exam v-if="dialogVisible"/>
     </el-dialog>
-    <!--<el-pagination-->
-    <!--@size-change="handleSizeChange"-->
-    <!--@current-change="handleCurrentChange"-->
-    <!--:current-page="params.pageNum"-->
-    <!--:page-sizes="pageSizes"-->
-    <!--:page-size="params.pageSize"-->
-    <!--layout="total, sizes, prev, pager, next, jumper"-->
-    <!--:total="totalCount"/>-->
+    <el-dialog
+      title="新增答案"
+      :visible.sync="dialogVisible1"
+      width="50%">
+      <exam v-if="dialogVisible1"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -86,12 +92,33 @@
 
     dialogVisible = false
 
-    replaceEdit (data) {
+    dialogVisible1 = false
+
+    sucessResult (data) {
+      this.formData = data
+      this.formData.results = this.formData.results ? this.formData.results : []
+    }
+
+    replaceJump (data) {
       this.dialogVisible = true
     }
 
     getPageUrl () {
       return this.geturl(this.serverUrl.ask.examPage)
+    }
+
+    statusFormatter (row) {
+      if (row.right === true) {
+        return '正确'
+      } else {
+        return '错误'
+      }
+    }
+    addResult (data) {
+      if (!data.reults) {
+        data.reults = []
+      }
+      this.dialogVisible1 = true
     }
   }
 </script>

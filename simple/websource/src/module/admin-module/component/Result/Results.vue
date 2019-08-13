@@ -37,11 +37,6 @@
       <el-table-column label="答案" prop="description"/>
       <el-table-column label="分值" prop="score"/>
       <el-table-column label="是否正确" prop="right" :formatter="statusFormatter"/>
-      <el-table-column label="所属题目" prop="exam">
-        <template slot-scope="scope">
-          <span> {{ scope.row.exam ? scope.row.exam.subjectName : '' }} </span>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" :min-width="60">
         <template slot-scope="scope">
           <el-button type="text" size="mini" @click="edit(scope.row)">编辑</el-button>

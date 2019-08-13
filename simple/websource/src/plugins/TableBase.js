@@ -171,22 +171,11 @@ export default class TableBase extends Vue {
 
   // 编辑
   edit (data) {
-    let params = this.getParames(this.currentHtml)
-    if (params.type === 'rtable') {
-      this.setParames('exam', {
-        type: 'rform',
-        id: data.id,
-        tableName: 'Food',
-        fileName: 'exams',
-        rid: params.rid,
-        parent: this,
-        rparent: params.parent
-      })
-      if (this.replaceEdit) {
-        this.interruptJump(this.replaceEdit, data)
-        return
-      }
+    if (this.replaceEdit) {
+      this.interruptJump(this.replaceEdit, data)
+      return
     }
+
     let nextParams
     // 这里设置的nextParams 请按照上面参数设置
     if (this.SetNextParams) {
@@ -194,14 +183,37 @@ export default class TableBase extends Vue {
     } else {
       nextParams = {id: data.id, type: 'form', parent: this}
     }
+
+    let params = this.getParames(this.currentHtml)
+    if (params.type === 'rtable') {
+      this.rtableEdit(params, data)
+      return
+    }
+
     let routeName = this.currentHtml.substring(0, this.currentHtml.length - 1)
     this.setParames(routeName, nextParams)
-    if (this.replaceEdit) {
-      this.interruptJump(this.replaceEdit, data)
+    if (this.replaceJump) {
+      this.interruptJump(this.replaceJump, data)
       return
     }
     this.$router.push({path: `/${routeName}/${data.id}`})
   }
+
+  rtableEdit (params, data) {
+    this.setParames('exam', {
+      type: 'rform',
+      id: data.id,
+      tableName: params.tableName,
+      fileName: params.fileName,
+      rid: params.rid,
+      parent: this,
+      rparent: params.parent
+    })
+    if (this.replaceJump) {
+      this.interruptJump(this.replaceJump, data)
+    }
+  }
+
   // 删除一行
   deleteRow (params) {
     this.$confirm('确认删除？', '友情提示', {

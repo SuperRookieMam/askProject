@@ -73,5 +73,12 @@
     getPageUrl () {
       return this.geturl(this.serverUrl.ask.foodPage)
     }
+    statusFormatter (row) {
+      if (row.right === true) {
+        return '正确'
+      } else {
+        return '错误'
+      }
+    }
   }
 </script>
