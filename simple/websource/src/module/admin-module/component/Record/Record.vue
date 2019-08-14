@@ -61,7 +61,7 @@
     @Prop({ default: () => 'new' })
     id
     activeName = 'base'
-    controllerMapping = 'data/record'
+    controllerMapping = 'data1/record'
     flag=true
     rules = {
          name: [

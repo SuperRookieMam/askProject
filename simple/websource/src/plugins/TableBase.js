@@ -261,11 +261,14 @@ export default class TableBase extends Vue {
   }
 
   submitForm (formName) {
+    console.log(formName)
     this.$refs[formName].validate((valid) => {
       if (valid) {
         let params = this.getParames(this.currentHtml)
         if (this.eidtLastFormData) {
-          this.beforeSubmit(this.eidtLastFormData, this.formData)
+          if (this.beforeSubmit(this.eidtLastFormData, this.formData)) {
+            return
+          }
         }
         if (params.id === 'new') {
           if (params.type === 'rform') {

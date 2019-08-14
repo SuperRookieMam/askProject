@@ -74,7 +74,7 @@
 
     routeName = 'record'
 
-    controllerMapping = 'data/record'
+    controllerMapping = 'data1/record'
 
     handleSizeChange (val) {
      this.params.pageSize = val

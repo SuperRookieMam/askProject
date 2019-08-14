@@ -11,7 +11,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="是否正确" prop="right">
-                <el-select v-model="temp" placeholder="请选择" @change="changeValue">
+                <el-select v-model="formData.right" placeholder="请选择" @change="changeValue">
                   <el-option
                     v-for="item in optionsRight"
                     :key="item.value"
@@ -62,13 +62,13 @@
   export default class Result extends Mixins(TableBase) {
     currentHtml = 'result'
 
-    temp = '正确'
+    temp = true
 
     optionsRight=[{
-      value: 'true',
+      value: true,
       label: '正确'
     }, {
-      value: 'false',
+      value: false,
       label: '错误'
     }]
 
@@ -77,7 +77,7 @@
     }
 
     changeValue (val) {
-      if (val === '正确') {
+      if (val === true) {
         this.formData.right = true
       } else {
         this.formData.right = false
@@ -94,6 +94,10 @@
           }
           for (let i = 0; i < params.parent[params.fileName].length; i++) {
             if (params.parent[params.fileName][i].id && params.parent[params.fileName][i].id === this.formData.id) {
+              params.rparent.dialogVisible1 = false
+              return
+            }
+            if (JSON.stringify(params.parent[params.fileName][i]) === JSON.stringify(this.formData)) {
               params.rparent.dialogVisible1 = false
               return
             }

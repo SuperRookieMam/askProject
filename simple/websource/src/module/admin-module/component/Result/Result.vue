@@ -63,10 +63,10 @@
     currentHtml = 'result'
 
     optionsRight=[{
-      value: 'true',
+      value: true,
       label: '正确'
     }, {
-      value: 'false',
+      value: false,
       label: '错误'
     }]
 
@@ -75,7 +75,7 @@
     }
 
     changeValue (val) {
-      if (val === 'true') {
+      if (val === true) {
         return '正确'
       } else {
         return '错误'
