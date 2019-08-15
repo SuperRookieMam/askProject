@@ -22,7 +22,7 @@ public class RoleInfo extends BaseEntity {
 
     // 角色名称
     @Column(name = "role_name_")
-    private String rolName;
+    private String roleName;
 
     @Column(name = "pid_")
     private Long pid;

@@ -1,6 +1,7 @@
 package com.ask.simple.entity;
 
 import com.ask.base.entity.BaseEntity;
+import com.ask.codecreate.feature.annotation.Description;
 import com.ask.codecreate.feature.annotation.IsCreate;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,12 @@ public class UserRole extends BaseEntity {
     @Column(name = "role_id_")
     private Long roleId;
 
-    @Column(name = "resource_id_")
-    private String resourceId ;
+
+
+    // 角色名称
+    @Column(name = "role_name_")
+    @Description(label = "角色名称")
+    private String roleName;
+
 
 }

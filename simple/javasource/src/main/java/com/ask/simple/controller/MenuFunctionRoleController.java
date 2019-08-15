@@ -27,4 +27,9 @@ public class MenuFunctionRoleController extends BaseController<MenuFunctionRole,
       List<MenuFunction> list = menuFunctionRoleService.getMenuFunctionByUserName(userDetailsDto.getUsername());
       return ResultDto.success(list);
     }
+    @GetMapping("user")
+    @ApiOperation(value="获取当前用户", notes="getUser")
+    public ResultDto getUser(@CurrentUser OAthUserDetailes userDetailsDto) {
+        return ResultDto.success(userDetailsDto);
+    }
 }

@@ -87,7 +87,7 @@
     }
 
     getPageUrl () {
-      return this.geturl(this.serverUrl.shopping.userRolePage)
+      return this.geturl(this.serverUrl.ask.userRolePage)
     }
   }
 </script>

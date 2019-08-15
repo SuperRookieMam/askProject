@@ -48,7 +48,7 @@
     currentHtml = 'roleInfo'
 
     getFromUrl () {
-      return this.geturl(this.serverUrl.shopping.roleInfoUpdate)
+      return this.geturl(this.serverUrl.ask.roleInfoUpdate)
     }
     replaceJump () {
       this.reload()

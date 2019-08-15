@@ -70,7 +70,7 @@
     currentHtml = 'userRole'
 
     getFromUrl () {
-      return this.geturl(this.serverUrl.shopping.userRoleUpdate)
+      return this.geturl(this.serverUrl.ask.userRoleUpdate)
     }
 
     timeout = null
@@ -107,7 +107,7 @@
           let basicsParams = []
           basicsParams.push({key: 'roleName', type: 'like', value: query})
           params.basicsParams = basicsParams
-          this.select(this.geturl(this.serverUrl.shopping.roleList), params, true).then(data => {
+          this.select(this.geturl(this.serverUrl.ask.roleList), params, true).then(data => {
             let reults = data.map(ele => {
               ele.value = ele.roleName
               return ele

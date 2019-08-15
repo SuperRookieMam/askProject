@@ -106,6 +106,26 @@ export default [{
         path: '/records',
         props: true,
         component: () => import('../component/Record/Records')
+      }, {
+        name: 'roleInfo',
+        path: '/roleInfo/:id',
+        props: true,
+        component: () => import('../component/RoleInfo/RoleInfo')
+      }, {
+        name: 'roleInfos',
+        path: '/roleInfos',
+        props: true,
+        component: () => import('../component/RoleInfo/RoleInfos')
+      }, {
+        name: 'userRole',
+        path: '/userRole/:id',
+        props: true,
+        component: () => import('../component/UserRole/UserRole')
+      }, {
+        name: 'userRoles',
+        path: '/userRoles',
+        props: true,
+        component: () => import('../component/UserRole/UserRoles')
       }
 
     ]
