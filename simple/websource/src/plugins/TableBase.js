@@ -266,7 +266,7 @@ export default class TableBase extends Vue {
       if (valid) {
         let params = this.getParames(this.currentHtml)
         if (this.eidtLastFormData) {
-          if (this.beforeSubmit(this.eidtLastFormData, this.formData)) {
+          if (!this.beforeSubmit(this.eidtLastFormData, this.formData)) {
             return
           }
         }
