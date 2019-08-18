@@ -13,5 +13,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("food")
 public class FoodController extends BaseController<Food,Long> {
-
 }

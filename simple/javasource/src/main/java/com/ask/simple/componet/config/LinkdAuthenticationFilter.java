@@ -49,11 +49,10 @@ public class LinkdAuthenticationFilter extends OncePerRequestFilter {
         UserDetails userDetails =autoRegister(request,response);
 
         if( request.getMethod().equalsIgnoreCase("delete")){
-        if(!userDetails.getUsername().equals("admin")){
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-            return;
-        }
-
+            if(!userDetails.getUsername().equals("admin")){
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "权限不足");
+                return;
+            }
         }
         if (ObjectUtils.isEmpty(userDetails)){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
@@ -77,7 +76,7 @@ public class LinkdAuthenticationFilter extends OncePerRequestFilter {
                 OAthUserDetailes oAthUserDetailes =  oAthUserDetailesService.findByCredentials(weixin);
                 if (ObjectUtils.isEmpty(oAthUserDetailes)) {
                     oAthUserDetailes =new OAthUserDetailes();
-                        oAthUserDetailes.setUsername(UUID.randomUUID().toString().replaceAll("-",""));
+                        oAthUserDetailes.setUsername(weixin);
                     oAthUserDetailes.setPassword(bCryptPasswordEncoder.encode("123456"));
                     oAthUserDetailes.setCredentials(weixin);
                     oAthUserDetailes.setLock(false);
