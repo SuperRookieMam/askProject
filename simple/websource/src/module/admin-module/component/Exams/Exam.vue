@@ -89,7 +89,7 @@
     options = [{label: '味型', value: '味型', type: '四选一'},
                 {label: '主料', value: '主料', type: '八选四'},
                 {label: '辅料', value: '辅料', type: '十选六'},
-                {label: '调料', value: '调料', type: '十选六'},
+                {label: '调料', value: '调料', type: '十五选十'},
                 {label: '成品特色', value: '成品特色', type: '四选一'},
                 {label: '渊源及文化', value: '渊源及文化', type: '六选三'}]
 
@@ -97,6 +97,24 @@
       this.options.forEach(ele => {
         if (this.formData.subjectName === ele.value) {
           this.formData.choose = ele.type
+          if (ele.type === '四选一') {
+            this.formData.chooseNum = 4
+            this.formData.rightNum = 1
+          } else if (ele.type === '八选四') {
+            this.formData.chooseNum = 8
+            this.formData.rightNum = 4
+          } else if (ele.type === '十选六') {
+            this.formData.chooseNum = 10
+            this.formData.rightNum = 6
+          } else if (ele.type === '六选三') {
+            this.formData.chooseNum = 6
+            this.formData.rightNum = 3
+          } else if (ele.type === '十五选十') {
+            this.formData.chooseNum = 15
+            this.formData.rightNum = 10
+          } else {
+            this.message('无此选择类型请选择，请检查', '友情提示')
+          }
         }
       })
     }

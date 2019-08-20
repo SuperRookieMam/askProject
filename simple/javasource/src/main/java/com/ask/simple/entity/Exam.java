@@ -38,13 +38,23 @@ public class Exam extends BaseEntity {
     private String description;
 
     // 单选,多选,
+    @Column(name = "choose_num_")
+    @Description(label = "选择数量")
+    private String chooseNum;
+
+    @Column(name = "right_num_")
+    @Description(label = "正确数量")
+    private String rightNum;
+
     @Column(name = "choose_")
-    @Description(label = "答案类型")
+    @Description(label = "正确数量")
     private String choose;
 
     @Column(name = "score_")
     @Description(label = "分值")
     private Integer score;
+
+
 
 //    @ManyToOne(cascade = CascadeType.REFRESH)
 //    @JoinColumn(name = "food_")

@@ -18,7 +18,7 @@ public class Management {
 //@EnableJpaAuditing
 //@SpringBootApplication
 //@ComponentScan(basePackages = {"com.ask.**"})
-//// 修改启动类，继承 SpringBootServletInitializer 并重写 configure 方法
+//// 修改启动类，继承 SpringBootServletInit ializer 并重写 configure 方法
 //public class Management extends SpringBootServletInitializer {
 //
 //    @Override

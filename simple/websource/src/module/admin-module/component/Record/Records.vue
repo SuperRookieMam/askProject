@@ -12,7 +12,7 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="菜品">
-            <el-input v-model="serchObj['food']" placeholder="请输入"/>
+            <el-input v-model="serchObj['foodName']" placeholder="请输入"/>
           </el-form-item>
         </el-col>
         <el-col :span="4">
@@ -34,18 +34,10 @@
         prop="answer"/>
       <el-table-column
         label="菜品"
-        prop="food"/>
-      <el-table-column
-        label="回答"
-        prop="answerQuestion"/>
+        prop="foodName"/>
       <el-table-column
         label="实际得分"
         prop="score"/>
-      <el-table-column label="操作" :min-width="60">
-        <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="edit(routeName,scope.row)">查看</el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
@@ -94,7 +86,8 @@
       }
       this.params.basicsParams = basicsParams
       this.select(`${this.controllerMapping}/page`, this.params, true).then(data => {
-          this.tableData = data.list
+        console.log(data)
+        this.tableData = data.list
           this.params.pageSize = data.pageSize
           this.params.pageNum = data.pageNum
           this.totalCount = data.total

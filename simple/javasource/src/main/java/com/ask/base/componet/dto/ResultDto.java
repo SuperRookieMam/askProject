@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResultDto {
+public class  ResultDto {
 
     private  int code;
 

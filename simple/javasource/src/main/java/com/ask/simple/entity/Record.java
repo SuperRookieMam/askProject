@@ -26,19 +26,21 @@ public class Record extends BaseEntity {
     @Description(label = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "answer_id_")
+    @Column(name = "answer_")
     @Description(label = "答题人")
-    private OAthUserDetailes answer;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="food_id_", insertable = false,updatable = false)
-    @Description(label = "菜品")
-    private Food food;
+    private String answer;
 
+    @Column(name = "answer_id_")
+    @Description(label = "答题人Id")
+    private Long answerId;
 
-    @Column(name = "answer_question_")
-    @Description(label = "回答")
-    private String answerQuestion;
+    @Column(name = "food_name_")
+    @Description(label = "菜品名")
+    private String foodName;
+    @Column(name = "food_id_")
+    @Description(label = "菜品id")
+    private Long foodId;
+
     @Column(name = "score_")
     @Description(label = "实际得分")
     private Integer score;
