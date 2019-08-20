@@ -66,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         templist.add("/swagger-resources/**");
         templist.add("/v2/api-docs/**");
         templist.add("/webjars/**");
+        templist.add("/preview/**");
         permitAll =  templist.toArray(new String[0]);
         permitPath = new String[templist.size()];
         for (int i = 0; i <templist.size() ; i++) {

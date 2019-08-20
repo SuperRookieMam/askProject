@@ -8,5 +8,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("fileInfos")
 public class FileInfoController extends FileInfoAbstactController<FileInfo,String> {
-
 }
