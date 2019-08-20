@@ -13,9 +13,9 @@ export default {
   beforeGetData: (fun, params) => {
     if (fun) {
       if (params) {
-        fun(params)
+        return fun(params)
       } else {
-        fun()
+        return fun()
       }
     }
   },
@@ -24,9 +24,9 @@ export default {
   afterGetData: (fun, params) => {
     if (fun) {
       if (params) {
-        fun(params)
+        return fun(params)
       } else {
-        fun()
+        return fun()
       }
     }
   },
@@ -35,9 +35,9 @@ export default {
   beforeSubmit: (fun, params) => {
     if (fun) {
       if (params) {
-        fun(params)
+        return fun(params)
       } else {
-        fun()
+        return fun()
       }
     }
   },
@@ -45,9 +45,9 @@ export default {
   submitSucess: (fun, params) => {
     if (fun) {
       if (params) {
-        fun(params)
+        return fun(params)
       } else {
-        fun()
+        return fun()
       }
     }
   },
@@ -55,9 +55,9 @@ export default {
   interruptJump (fun, params) {
     if (fun) {
       if (params) {
-        fun(params)
+        return fun(params)
       } else {
-        fun()
+        return fun()
       }
     }
   }
