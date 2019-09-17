@@ -60,7 +60,12 @@
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="题目设置" name="exams">
-          <exams v-if="examsVisbale"/>
+          <!--<exams v-if="examsVisbale"/>-->
+          <exam v-for="item in formData.exams"
+                :exam="item"
+                :key="item"
+                @add-exam="andExam"
+                :v-if="activeName === 'exams'"/>
           <el-row>
             <el-col :span="12">
               <el-form-item>
@@ -81,10 +86,10 @@
 <script>
   import {Component, Mixins} from 'vue-property-decorator'
   import TableBase from '../../../../plugins/TableBase'
-  import Exams from '../Exams/Exams'
+  import Exam from '../Exams/Exam'
   @Component({
     components: {
-      Exams
+      Exam
     }
   })
   export default class Food extends Mixins(TableBase) {
@@ -97,6 +102,15 @@
     rules = {}
     fileList= []
     fileList2= []
+
+    formData = {exams:
+        [{subjectName: '味型', results: [{}, {}, {}, {}], choose: '4选1', chooseNum: 4, rightNum: 1},
+      {subjectName: '主料', results: [{}, {}, {}, {}, {}, {}, {}, {}], choose: '8选4', chooseNum: 8, rightNum: 4},
+      {subjectName: '辅料', results: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}], choose: '10选6', chooseNum: 10, rightNum: 6},
+      {subjectName: '调料', results: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}], choose: '15选10', chooseNum: 15, rightNum: 10},
+      {subjectName: '成品特色', results: [{}, {}, {}, {}], choose: '4选1', chooseNum: 4, rightNum: 1},
+      {subjectName: '渊源及文化', results: [{}, {}, {}, {}, {}, {}], choose: '6选3', chooseNum: 6, rightNum: 3}]
+    }
 
     uploadFileImgUrl (params) {
       this.upfile(params).then(result => {
@@ -148,6 +162,7 @@
 
     sucessResult (data) {
       this.formData = data
+      this.exams = data.exams
       if (this.formData.imgUrl) {
         this.fileList = [{
           url: `${this.geturl(this.serverUrl.file.preview)}${this.formData.imgUrl}`,
@@ -187,7 +202,7 @@
        let totalScore = 0
       for (var t in formData.exams) {
           if (formData.exams[t].results === undefined || formData.exams[t].results === '' || formData.exams[t].results === null) {
-            this.message('该试题答案为空', '友情提示')
+            this.message(formData.exams[t].subjectName + ' 试题答案为空', '友情提示')
             return false
           } else {
             let score = 0
@@ -199,7 +214,7 @@
             console.log(score)
             console.log(formData.exams[t].score)
             if (Number.parseInt(score) !== Number.parseInt(formData.exams[t].score)) {
-              this.message('该试题的总分与对应正确答案总分不符，请检查', '友情提示')
+              this.message(formData.exams[t].subjectName + '试题的总分与对应正确答案总分不符，请检查', '友情提示')
               return false
             }
             totalScore = totalScore + score
@@ -211,6 +226,15 @@
         return false
       }
       return true
+    }
+
+    andExam (exam) {
+      // 检查 是否为空
+      for (var o in this.formData.exams) {
+        if (exam.subjectName === this.formData.exams[o].subjectName) {
+          this.formData.exams[o] = exam
+        }
+      }
     }
   }
 </script>
