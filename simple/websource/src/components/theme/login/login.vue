@@ -39,8 +39,8 @@
     loginRule = [{required: true, message: '请输入'}]
 
     user = {
-      username: 'jueshihaonanren',
-      password: '123456'
+      username: '',
+      password: ''
     }
 
     @loginModel.Action('login')

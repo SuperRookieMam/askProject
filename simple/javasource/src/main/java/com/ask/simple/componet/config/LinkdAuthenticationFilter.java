@@ -59,7 +59,7 @@ public class LinkdAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
        UsernamePasswordAuthenticationToken authentication =
-               new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+               new UsernamePasswordAuthenticationToken(userDetails,((OAthUserDetailes)userDetails).getCredentials(), userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     logger.info("authenticated user " + username + ", setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -76,13 +76,15 @@ public class LinkdAuthenticationFilter extends OncePerRequestFilter {
                 OAthUserDetailes oAthUserDetailes =  oAthUserDetailesService.findByCredentials(weixin);
                 if (ObjectUtils.isEmpty(oAthUserDetailes)) {
                     oAthUserDetailes =new OAthUserDetailes();
-                        oAthUserDetailes.setUsername(weixin);
+                    oAthUserDetailes.setUsername(weixin);
                     oAthUserDetailes.setPassword(bCryptPasswordEncoder.encode("123456"));
                     oAthUserDetailes.setCredentials(weixin);
                     oAthUserDetailes.setLock(false);
                     oAthUserDetailes.setEnabled(true);
-                    oAthUserDetailes.setEnabled(false);
+                    oAthUserDetailes.setExpired(false);
                     oAthUserDetailes = oAthUserDetailesService.insertByEntity(oAthUserDetailes);
+                    userDetails = oAthUserDetailes;
+                }else {
                     userDetails = oAthUserDetailes;
                 }
             }

@@ -150,12 +150,12 @@
       const isJPG = file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
         file.type === 'image/jpg'
-      const isLt2M = file.size / 1024 / 1024 < 2
+      const isLt2M = file.size / 1024 / 1024 < 50
       if (!isJPG) {
         this.message('上传头像图片只能是 JPG png jpeg 格式!', '友情提示')
       }
       if (!isLt2M) {
-        this.message('上传头像图片大小不能超过 2MB!', '友情提示')
+        this.message('上传头像图片大小不能超过 50MB!', '友情提示')
       }
       return isJPG && isLt2M
     }

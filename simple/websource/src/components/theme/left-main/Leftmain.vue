@@ -18,7 +18,7 @@
             <el-menu-item index="0"
                           style="padding: 0 15px;"
                           class="avatar">
-              <img src="../../../assets/girl.jpg" alt="">
+              <img src="../../../assets/logo.png" alt="">
             </el-menu-item>
             <el-submenu index="2">
               <template slot="title">{{ currentUser.username }}</template>
